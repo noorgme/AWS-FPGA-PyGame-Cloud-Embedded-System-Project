@@ -29,6 +29,8 @@ class GameStateManager:
             titlescreen()
         elif self.current_state == GameState.LOGINSCREEN:
             loginscreen()
+        elif self.current_state == GameState.PLAYERCONNECT:
+            playerconnect()
 
 #Define Screen Functions
 
@@ -122,6 +124,12 @@ def loginscreen():
                     usernameSelected = False
                     hoverColourUser = white
                     hoverColourPW = black
+
+                elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
+                    if username == "user" and password == "pass":
+                        game_state_manager.change_state(GameState.PLAYERCONNECT)
+                        game_state_manager.run_state()
+                        print ("changing")
                 else:
                     usernameSelected = False
                     pwSelected = False
@@ -165,11 +173,7 @@ def loginscreen():
                     elif event.key == pg.K_BACKSPACE:
                         password = password[:len(password)-1]
                         passtext = font1.render(password, True, black)
-                elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
-                    if username == "user" and password == "pass":
-                        game_state_manager.change_state(GameState.PLAYERCONNECT)
-                        game_state_manager.run_state()
-                        print ("changing")
+
 
 
        
