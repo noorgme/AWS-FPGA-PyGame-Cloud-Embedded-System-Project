@@ -9,3 +9,4 @@
 ## 05/03/2023
 - Fixed login screen input bar bugs
 - Added ChangeLog
+- Added basic playerconnect screen
