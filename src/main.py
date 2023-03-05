@@ -75,7 +75,10 @@ def loginscreen():
     username_label = font1.render("Username:", True, black)
     password_label = font1.render("Password:", True, black)
 
-  
+    # Define input boxes
+    username_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 - 30, 200, 30)
+    password_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 30, 200, 30)
+
     # Define login button
     login_button_rect = pg.Rect(screenWidth // 2 - 50, screenHeight // 2 + 80, 100, 30)
     login_text = font1.render("Login", True, black)
@@ -89,16 +92,12 @@ def loginscreen():
     # Set default values for username and password
     username = ""
     password = ""
-    userText = font1.render(username, True, black)
-    passText = font1.render(password, True, black)
-    username_input_rect = userText.get_rect()
-    username_input_rect.center = (screenWidth // 2, screenHeight // 2 - 30) # Set center coordinates
-    password_input_rect = passText.get_rect()
-    password_input_rect.center = (screenWidth // 2, screenHeight // 2+30) # Set center coordinates
-
-# Create white outline rects
-    userOutlineRect = username_input_rect.inflate(370, 20) # Inflate rect by 10 pixels on all sides
-    passOutlineRect = password_input_rect.inflate(370, 20) # Inflate rect by 10 pixels on all sides
+    usertext = font1.render(username, True, black)
+    passtext = font1.render(password, True, black)
+    usernameHovered = False
+    usernameSelected = False
+    pwHovered = False
+    pwSelected = False
 
 
     while True:
@@ -111,15 +110,56 @@ def loginscreen():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-            if event.type == pg.MOUSEMOTION:
-                if userOutlineRect.collidepoint(pg.mouse.get_pos()):
+            elif event.type == pg.MOUSEMOTION:
+                if username_input_rect.collidepoint(pg.mouse.get_pos()):
                     hoverColourUser = black
-                elif passOutlineRect.collidepoint(pg.mouse.get_pos()):
+                    usernameHovered = True
+
+                else:
+                    usernameHovered = False
+                    if (usernameSelected):
+                        hoverColourUser = black
+            
+                if password_input_rect.collidepoint(pg.mouse.get_pos()):
                     hoverColourPW = black
+                    pwHovered = True
+                else:
+                    pwHovered = False
+                    if (pwSelected):
+                        hoverColourPW = black
+                    else:
+                        hoverColourPW = white
+
+            elif event.type == pg.MOUSEBUTTONUP:
+                if (usernameHovered):
+                    usernameSelected = True
                 else:
                     hoverColourUser = white
-                    hoverColourPW = white
-                
+                    usernameSelected = False
+
+                if (pwHovered):
+                    pwSelected = True
+                else:
+                    hoverColourUser = white
+                    pwSelected = False
+            elif event.type == pg.KEYDOWN:
+                if (usernameSelected):
+                    if event.unicode.isalnum():
+                        if len(username) < 14:
+                            username += event.unicode
+                            usertext = font1.render(username, True, black)
+                    elif event.key == pg.K_BACKSPACE:
+                        username = username[:len(username)-1]
+                        usertext = font1.render(username, True, black)
+                elif (pwSelected):
+                    if event.unicode.isalnum():
+                        if len(password) < 14:
+                            password += event.unicode
+                            passtext = font1.render(password, True, black)
+                    elif event.key == pg.K_BACKSPACE:
+                        password = username[:len(username)-1]
+                        passtext = font1.render(username, True, black)                    
+
 
            
 
@@ -127,12 +167,12 @@ def loginscreen():
         screen.fill(light_grey)
 
         # Draw the username and password labels
-        screen.blit(username_label, (userOutlineRect.left - 120, userOutlineRect.centery - 8))
-        screen.blit(password_label, (passOutlineRect.left - 120,passOutlineRect.centery - 8))
+        screen.blit(username_label, (username_input_rect.left - 120, username_input_rect.centery - 8))
+        screen.blit(password_label, (password_input_rect.left - 120, password_input_rect.centery - 8))
 
         # Draw the username and password input boxes
-        pg.draw.rect(screen, hoverColourUser, userOutlineRect, 2)
-        pg.draw.rect(screen, hoverColourPW, passOutlineRect, 2)
+        pg.draw.rect(screen, hoverColourUser, username_input_rect, 2)
+        pg.draw.rect(screen, hoverColourPW, password_input_rect, 2)
 
          # Draw the login button
         pg.draw.rect(screen, "lightblue", login_button_rect)
@@ -140,7 +180,8 @@ def loginscreen():
 
         # Draw the instructions
         screen.blit(instructions, instructions_rect)
-
+        screen.blit(usertext,  (username_input_rect.left+8, username_input_rect.centery-13)) 
+        screen.blit(passtext,  (username_input_rect.left+8, username_input_rect.centery+47)) 
         #blit framerate
         screen.blit(framerate, framerect)
 
@@ -180,4 +221,3 @@ def main():
     game_state_manager.run_state()
 
 main()
-        
