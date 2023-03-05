@@ -13,7 +13,9 @@ os.chdir(proj_folder+"\include")
 class GameState(Enum):
     TITLESCREEN = 0
     LOGINSCREEN = 1
-    #TO-DO: Add remaining game states
+    PLAYERCONNECT = 2
+
+    #TO-DO: Implement remaining game states
 
 class GameStateManager:
     def __init__(self):
@@ -52,8 +54,7 @@ def titlescreen():
                 if game_state_manager.current_state == GameState.TITLESCREEN:
                     game_state_manager.change_state(GameState.LOGINSCREEN)
                     game_state_manager.run_state()
-                    print (game_state_manager.current_state)
-                    print ("login")
+
 
         screen.fill("grey")
         #blit logo
@@ -94,9 +95,7 @@ def loginscreen():
     password = ""
     usertext = font1.render(username, True, black)
     passtext = font1.render(password, True, black)
-    usernameHovered = False
     usernameSelected = False
-    pwHovered = False
     pwSelected = False
 
 
@@ -116,11 +115,13 @@ def loginscreen():
                     usernameSelected = True
                     pwSelected = False
                     hoverColourPW = white
+                    hoverColourUser = black
 
                 elif (password_input_rect.collidepoint(pg.mouse.get_pos())):
                     pwSelected = True
                     usernameSelected = False
                     hoverColourUser = white
+                    hoverColourPW = black
                 else:
                     usernameSelected = False
                     pwSelected = False
@@ -128,20 +129,24 @@ def loginscreen():
                     hoverColourPW = white
 
             elif event.type == pg.MOUSEMOTION:
-                if username_input_rect.collidepoint(pg.mouse.get_pos()) or usernameSelected:
+                if username_input_rect.collidepoint(pg.mouse.get_pos()) or usernameSelected: #if user hovered or selected 
                     hoverColourUser = black
-            
+                    if password_input_rect.collidepoint(pg.mouse.get_pos()) or pwSelected:
+                        hoverColourPW = black
+                    else:
+                        hoverColourPW = white
+
             
                 elif password_input_rect.collidepoint(pg.mouse.get_pos()) or pwSelected:
                     hoverColourPW = black
+                    if not usernameSelected:
+                        hoverColourUser = white
 
                 else:
+                    usernameSelected = False
+                    pwSelected = False
                     hoverColourUser = white
-                    hoverColourPW = white
-
-
-
-                
+                    hoverColourPW = white 
 
             elif event.type == pg.KEYDOWN:
                 if (usernameSelected):
@@ -159,10 +164,15 @@ def loginscreen():
                             passtext = font1.render(password, True, black)
                     elif event.key == pg.K_BACKSPACE:
                         password = password[:len(password)-1]
-                        passtext = font1.render(password, True, black)                    
+                        passtext = font1.render(password, True, black)
+                elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
+                    if username == "user" and password == "pass":
+                        game_state_manager.change_state(GameState.PLAYERCONNECT)
+                        game_state_manager.run_state()
+                        print ("changing")
 
 
-           
+       
 
         # Draw the background
         screen.fill(light_grey)
@@ -188,6 +198,13 @@ def loginscreen():
 
         pg.display.flip()
     # To-DO, code for loginscreen
+
+def playerconnect():
+    print("playerconnect")
+
+
+
+
 
 
 pg.init()
