@@ -110,38 +110,39 @@ def loginscreen():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-            elif event.type == pg.MOUSEMOTION:
-                if username_input_rect.collidepoint(pg.mouse.get_pos()):
-                    hoverColourUser = black
-                    usernameHovered = True
-
-                else:
-                    usernameHovered = False
-                    if (usernameSelected):
-                        hoverColourUser = black
-            
-                if password_input_rect.collidepoint(pg.mouse.get_pos()):
-                    hoverColourPW = black
-                    pwHovered = True
-                else:
-                    pwHovered = False
-                    if (pwSelected):
-                        hoverColourPW = black
-                    else:
-                        hoverColourPW = white
 
             elif event.type == pg.MOUSEBUTTONUP:
-                if (usernameHovered):
+                if (username_input_rect.collidepoint(pg.mouse.get_pos())):
                     usernameSelected = True
-                else:
-                    hoverColourUser = white
-                    usernameSelected = False
-
-                if (pwHovered):
-                    pwSelected = True
-                else:
-                    hoverColourUser = white
                     pwSelected = False
+                    hoverColourPW = white
+
+                elif (password_input_rect.collidepoint(pg.mouse.get_pos())):
+                    pwSelected = True
+                    usernameSelected = False
+                    hoverColourUser = white
+                else:
+                    usernameSelected = False
+                    pwSelected = False
+                    hoverColourUser = white
+                    hoverColourPW = white
+
+            elif event.type == pg.MOUSEMOTION:
+                if username_input_rect.collidepoint(pg.mouse.get_pos()) or usernameSelected:
+                    hoverColourUser = black
+            
+            
+                elif password_input_rect.collidepoint(pg.mouse.get_pos()) or pwSelected:
+                    hoverColourPW = black
+
+                else:
+                    hoverColourUser = white
+                    hoverColourPW = white
+
+
+
+                
+
             elif event.type == pg.KEYDOWN:
                 if (usernameSelected):
                     if event.unicode.isalnum():
@@ -157,8 +158,8 @@ def loginscreen():
                             password += event.unicode
                             passtext = font1.render(password, True, black)
                     elif event.key == pg.K_BACKSPACE:
-                        password = username[:len(username)-1]
-                        passtext = font1.render(username, True, black)                    
+                        password = password[:len(password)-1]
+                        passtext = font1.render(password, True, black)                    
 
 
            
