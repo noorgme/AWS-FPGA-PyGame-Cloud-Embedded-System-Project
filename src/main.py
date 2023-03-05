@@ -40,7 +40,7 @@ def titlescreen():
     
     titleMsg1 = font1.render("Press any key to continue", True,white)
     titleMsg1rect = titleMsg1.get_rect()
-    titleMsg1rect.center = (screenWidth // 2, screenHeight //2 + 60)
+    titleMsg1rect.center = ((screenWidth // 2) + 30, screenHeight //2 + 60)
 
     while True:
         clock.tick(60)
@@ -79,7 +79,7 @@ def loginscreen():
     password_label = font1.render("Password:", True, black)
 
     # Define input boxes
-    username_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 - 30, 200, 30)
+    username_input_rect = pg.Rect((screenWidth // 2) - 100, screenHeight // 2 - 30, 200, 30)
     password_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 30, 200, 30)
 
     # Define login button
@@ -129,7 +129,6 @@ def loginscreen():
                     if username == "user" and password == "pass":
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
-                        print ("changing")
                 else:
                     usernameSelected = False
                     pwSelected = False
@@ -204,7 +203,54 @@ def loginscreen():
     # To-DO, code for loginscreen
 
 def playerconnect():
-    print("playerconnect")
+    waiting_msg = font1.render('Waiting for players to connect...', True, black)
+    start_msg = font1.render('Start game', True, black)
+    connected_msg = font1.render('Players Connected (3-6): ', True, black)
+
+    # Define square dimensions and spacing
+    square_size = 220
+    square_spacing = 70
+
+    # Define square coordinates
+    squares = [
+        [(screenWidth / 2) - 1.6*(square_size + square_spacing), screenHeight / 3 - 140],
+        [(screenWidth / 2) - 1.2*(square_spacing), screenHeight / 3 - 140],
+        [(screenWidth / 2) + (square_spacing + square_size), screenHeight / 3 - 140],
+
+        [(screenWidth / 2) - 1.6*(square_size + square_spacing), screenHeight / 3 + 130],
+        [(screenWidth / 2) - 1.2*(square_spacing), screenHeight / 3 + 130],
+        [(screenWidth / 2) + (square_spacing + square_size), screenHeight / 3 + 130]
+
+    ]
+    screen.fill(light_grey)
+    #draw squares
+    for square in squares:
+        pg.draw.rect(screen, blue, (square[0], square[1], square_size, square_size), border_radius=10)
+
+    # Draw waiting message and start button
+    screen.blit(waiting_msg, (screenWidth / 2 - waiting_msg.get_width() / 2, screenHeight - 100))
+    pg.draw.rect(screen, green, (screenWidth / 2 - 75, screenHeight - 60, 150, 50), border_radius=10)
+    screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
+
+    # Draw connected message
+    screen.blit(connected_msg, (squares[3][0] - 60, 50))
+    
+    pg.display.flip()
+    
+    while True:
+        clock.tick(60)
+        framerate = font1.render(str(pg.time.get_ticks()), True, black)
+        framerect = framerate.get_rect()
+        framerect.bottomright = (screenWidth-10, screenHeight-20)
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
+        
+
+        
+        pg.display.flip()
 
 
 
@@ -227,7 +273,10 @@ pg.display.set_caption("FoodGame")
 black = (0, 0, 0)
 white = (255, 255, 255)
 light_grey = (200, 200, 200)
-hoverColour = white
+blue = (0, 0, 255)
+green = (0, 255, 0)
+red = (255, 0, 0)
+
 
 #Set Fonts
 font1 = pg.font.Font(r"fonts\retro.ttf", 20)
