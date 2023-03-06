@@ -126,7 +126,7 @@ def loginscreen():
                     hoverColourPW = black
 
                 elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
-                    if username == "user" and password == "pass":
+                    if username == "user" and password == "pass" or 1:
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
                 else:
@@ -206,6 +206,10 @@ def playerconnect():
     waiting_msg = font1.render('Waiting for players to connect...', True, black)
     start_msg = font1.render('Start game', True, black)
     connected_msg = font1.render('Players Connected (3-6): ', True, black)
+    de10 = pg.image.load("img/de10.png").convert_alpha()
+    de10 = pg.transform.scale(de10, (300, 150))
+    de10rect = de10.get_rect()
+    
 
     # Define square dimensions and spacing
     square_size = 220
@@ -222,22 +226,18 @@ def playerconnect():
         [(screenWidth / 2) + (square_spacing + square_size), screenHeight / 3 + 130]
 
     ]
-    screen.fill(light_grey)
-    #draw squares
-    for square in squares:
-        pg.draw.rect(screen, blue, (square[0], square[1], square_size, square_size), border_radius=10)
+    niosCoords = [(squares[0][0] +125, squares[0][1]+110),
+                  (squares[1][0] +125, squares[1][1]+110),
+                  (squares[2][0] +125, squares[2][1]+110),
+                  (squares[3][0] +125, squares[3][1]+110),
+                  (squares[4][0] +125, squares[4][1]+110),
+                  (squares[5][0] +125, squares[5][1]+110)]
 
-    # Draw waiting message and start button
-    screen.blit(waiting_msg, (screenWidth / 2 - waiting_msg.get_width() / 2, screenHeight - 100))
-    pg.draw.rect(screen, green, (screenWidth / 2 - 75, screenHeight - 60, 150, 50), border_radius=10)
-    screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
 
-    # Draw connected message
-    screen.blit(connected_msg, (squares[3][0] - 60, 50))
-    
     pg.display.flip()
     
     while True:
+        screen.fill(light_grey)
         clock.tick(60)
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
@@ -249,7 +249,30 @@ def playerconnect():
                 exit()
         
 
+            # Draw waiting message and start button
+        screen.blit(waiting_msg, (screenWidth / 2 - waiting_msg.get_width() / 2, screenHeight - 100))
+        pg.draw.rect(screen, green, (screenWidth / 2 - 75, screenHeight - 60, 150, 50), border_radius=10)
+        screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
+
+        # Draw connected message
+        screen.blit(connected_msg, (squares[3][0] - 60, 50))
+
+        # Draw waiting message and start button
+        screen.blit(waiting_msg, (screenWidth / 2 - waiting_msg.get_width() / 2, screenHeight - 100))
+        pg.draw.rect(screen, green, (screenWidth / 2 - 75, screenHeight - 60, 150, 50), border_radius=10)
+        screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
+        # Draw connected message
+        screen.blit(connected_msg, (squares[3][0] - 60, 50))
         
+        #draw squares
+        for square in squares:
+            pg.draw.rect(screen, blue, (square[0], square[1], square_size, square_size), border_radius=10)
+        
+        for i in niosCoords:
+            de10rect.center = i
+            screen.blit(de10, de10rect)
+        #blit framerate
+        screen.blit(framerate, framerect)
         pg.display.flip()
 
 
