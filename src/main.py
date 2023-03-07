@@ -14,6 +14,7 @@ class GameState(Enum):
     TITLESCREEN = 0
     LOGINSCREEN = 1
     PLAYERCONNECT = 2
+    CHARACTERSELECT = 3
 
     #TO-DO: Implement remaining game states
 
@@ -31,6 +32,9 @@ class GameStateManager:
             loginscreen()
         elif self.current_state == GameState.PLAYERCONNECT:
             playerconnect()
+        elif self.current_state == GameState.CHARACTERSELECT:
+            characterselect()
+
 
 #Define Screen Functions
 
@@ -53,9 +57,8 @@ def titlescreen():
                 exit()
 
             if event.type == pg.KEYDOWN:
-                if game_state_manager.current_state == GameState.TITLESCREEN:
-                    game_state_manager.change_state(GameState.LOGINSCREEN)
-                    game_state_manager.run_state()
+                game_state_manager.change_state(GameState.LOGINSCREEN)
+                game_state_manager.run_state()
 
 
         screen.fill("grey")
@@ -205,10 +208,17 @@ def loginscreen():
 def playerconnect():
     waiting_msg = font1.render('Waiting for players to connect...', True, black)
     start_msg = font1.render('Start game', True, black)
-    connected_msg = font1.render('Players Connected (3-6): ', True, black)
+    start_msg_rect = start_msg.get_rect()
+    start_msg_rect.center = ((screenWidth / 2 - start_msg.get_width() / 2), (screenHeight - 45))
+    
+    
     de10 = pg.image.load("img/de10.png").convert_alpha()
     de10 = pg.transform.scale(de10, (300, 150))
+    de10_trans = de10.copy()
+    de10_trans.set_alpha(120)
+
     de10rect = de10.get_rect()
+
     
 
     # Define square dimensions and spacing
@@ -232,6 +242,7 @@ def playerconnect():
                   (squares[3][0] +125, squares[3][1]+110),
                   (squares[4][0] +125, squares[4][1]+110),
                   (squares[5][0] +125, squares[5][1]+110)]
+    numPlayers = 3
 
 
     pg.display.flip()
@@ -247,7 +258,11 @@ def playerconnect():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-        
+            elif event.type == pg.MOUSEBUTTONUP:
+                if (start_msg_rect.collidepoint(pg.mouse.get_pos())):
+                    game_state_manager.change_state(GameState.CHARACTERSELECT)
+                    game_state_manager.run_state()
+                
 
             # Draw waiting message and start button
         screen.blit(waiting_msg, (screenWidth / 2 - waiting_msg.get_width() / 2, screenHeight - 100))
@@ -255,6 +270,7 @@ def playerconnect():
         screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
 
         # Draw connected message
+        connected_msg = font1.render('Players Connected (3-6): '+str(numPlayers), True, black)
         screen.blit(connected_msg, (squares[3][0] - 60, 50))
 
         # Draw waiting message and start button
@@ -268,16 +284,30 @@ def playerconnect():
         for square in squares:
             pg.draw.rect(screen, blue, (square[0], square[1], square_size, square_size), border_radius=10)
         
-        for i in niosCoords:
-            de10rect.center = i
+        for i in range(0,numPlayers):
+            de10rect.center = niosCoords[i]
             screen.blit(de10, de10rect)
+        
+        for i in range(0, 6-numPlayers):
+            de10rect.center = niosCoords[5-i]
+            screen.blit(de10_trans, de10rect)
         #blit framerate
         screen.blit(framerate, framerect)
         pg.display.flip()
 
+def characterselect():
+   
+    pg.display.flip()
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
 
-
-
+        screen.fill(light_grey)
+        pg.display.flip()
+        
+        
 
 
 pg.init()
