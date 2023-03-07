@@ -15,7 +15,7 @@ class GameState(Enum):
     LOGINSCREEN = 1
     PLAYERCONNECT = 2
     CHARACTERSELECT = 3
-
+    MAINGAME = 4
     #TO-DO: Implement remaining game states
 
 class GameStateManager:
@@ -34,7 +34,19 @@ class GameStateManager:
             playerconnect()
         elif self.current_state == GameState.CHARACTERSELECT:
             characterselect()
+        elif self.current_state == GameState.MAINGAME:
+            maingame()
 
+#Define player class
+class Player:
+    def __init__(self, name, character, hasBomb, isAlive)
+        self.name = name
+        self.character = character
+        self.hasBomb = False
+        self.isAlive = True
+    
+    def throwBomb(self, direction):
+        print ("Bomb thrown to " + str(direction))
 
 #Define Screen Functions
 
@@ -298,6 +310,9 @@ def playerconnect():
 def characterselect():
    
     pg.display.flip()
+    #switch to maingame function for development
+    game_state_manager.change_state(GameState.MAINGAME)
+    game_state_manager.run_state()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -307,7 +322,35 @@ def characterselect():
         screen.fill(light_grey)
         pg.display.flip()
         
-        
+def maingame():
+    pg.display.flip()
+    #load character images
+    characters = ["sarim", "bouganis", "naylor"]
+    sarim_img = pg.image.load("img/sarim.png")
+    sarim_img = pg.transform.scale(sarim_img, (160, 140))
+    sarim_rect = sarim_img.get_rect(center = ((screenWidth//2-250), (screenHeight//2-250)))
+
+    naylor_img = pg.image.load("img/naylor.png")
+    naylor_img = pg.transform.scale(naylor_img, (130, 140))
+    naylor_rect = naylor_img.get_rect(center = ((screenWidth//2+250), (screenHeight//2-250)))
+
+    bouganis_img = pg.image.load("img/bouganis.png")
+    bouganis_img = pg.transform.scale(bouganis_img, (130, 140))
+    bouganis_rect = bouganis_img.get_rect(center = ((screenWidth//2), (screenHeight//2+250)))
+
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
+
+        screen.fill("orange")
+        screen.blit(sarim_img, sarim_rect)
+        screen.blit(naylor_img, naylor_rect)
+        screen.blit(bouganis_img, bouganis_rect)
+        pg.display.flip()
+
+
 
 
 pg.init()
