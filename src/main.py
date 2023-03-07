@@ -39,11 +39,20 @@ class GameStateManager:
 
 #Define player class
 class Player:
-    def __init__(self, name, character, hasBomb, isAlive)
+    def __init__(self, name, character, hasBomb, isAlive, playernum):
         self.name = name
         self.character = character
-        self.hasBomb = False
-        self.isAlive = True
+        self.hasBomb = hasBomb
+        self.isAlive = isAlive
+        self.img = pg.image.load("img/"+character+".png").convert_alpha()
+        if playernum == 1:
+            playerpos = (screenWidth//2, screenHeight//2+200)
+        if playernum == 2:
+            playerpos = (screenWidth//2 - 200, screenHeight//2-100)
+        if playernum == 3:
+            playerpos = (screenWidth//2+200, screenHeight//2-100)
+        self.img = pg.transform.scale(self.img, (150, 150))
+        self.player_rect = self.img.get_rect(center = playerpos)
     
     def throwBomb(self, direction):
         print ("Bomb thrown to " + str(direction))
@@ -310,9 +319,7 @@ def playerconnect():
 def characterselect():
    
     pg.display.flip()
-    #switch to maingame function for development
-    game_state_manager.change_state(GameState.MAINGAME)
-    game_state_manager.run_state()
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -326,28 +333,37 @@ def maingame():
     pg.display.flip()
     #load character images
     characters = ["sarim", "bouganis", "naylor"]
-    sarim_img = pg.image.load("img/sarim.png")
-    sarim_img = pg.transform.scale(sarim_img, (160, 140))
-    sarim_rect = sarim_img.get_rect(center = ((screenWidth//2-250), (screenHeight//2-250)))
+    player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
+    player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
+    player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
+    players = [player1, player2, player3]
 
-    naylor_img = pg.image.load("img/naylor.png")
-    naylor_img = pg.transform.scale(naylor_img, (130, 140))
-    naylor_rect = naylor_img.get_rect(center = ((screenWidth//2+250), (screenHeight//2-250)))
 
-    bouganis_img = pg.image.load("img/bouganis.png")
-    bouganis_img = pg.transform.scale(bouganis_img, (130, 140))
-    bouganis_rect = bouganis_img.get_rect(center = ((screenWidth//2), (screenHeight//2+250)))
+    #load bomb
+    bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+    bomb_img = pg.transform.scale(bomb_img, (70, 70))
+    bomb_rect = bomb_img.get_rect()
+
 
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
+    
 
         screen.fill("orange")
-        screen.blit(sarim_img, sarim_rect)
-        screen.blit(naylor_img, naylor_rect)
-        screen.blit(bouganis_img, bouganis_rect)
+        screen.blit(player1.img, player1.player_rect)
+        screen.blit(player2.img, player2.player_rect)
+        screen.blit(player3.img, player3.player_rect)
+
+
+        for player in players:
+            if (player.hasBomb):
+                
+                bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
+                screen.blit(bomb_img, bomb_rect)
+        
         pg.display.flip()
 
 
