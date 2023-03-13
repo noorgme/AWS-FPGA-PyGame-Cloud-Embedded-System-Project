@@ -44,6 +44,7 @@ class Player:
         self.character = character
         self.hasBomb = hasBomb
         self.isAlive = isAlive
+        self.playernum = playernum
         self.img = pg.image.load("img/"+character+".png").convert_alpha()
         if playernum == 1:
             playerpos = (screenWidth//2, screenHeight//2+200)
@@ -54,8 +55,10 @@ class Player:
         self.img = pg.transform.scale(self.img, (150, 150))
         self.player_rect = self.img.get_rect(center = playerpos)
     
-    def throwBomb(self, direction):
-        print ("Bomb thrown to " + str(direction))
+    def throwBomb(self, Player):
+        print ("Bomb thrown to " + str(Player.playernum))
+        self.hasBomb = False
+        Player.hasBomb = True
 
 #Define Screen Functions
 
@@ -319,12 +322,15 @@ def playerconnect():
 def characterselect():
    
     pg.display.flip()
+    game_state_manager.change_state(GameState.MAINGAME)
+    game_state_manager.run_state()
 
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
+
 
         screen.fill(light_grey)
         pg.display.flip()
@@ -333,6 +339,8 @@ def maingame():
     pg.display.flip()
     #load character images
     characters = ["sarim", "bouganis", "naylor"]
+
+    #init players
     player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
     player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
     player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
@@ -344,12 +352,19 @@ def maingame():
     bomb_img = pg.transform.scale(bomb_img, (70, 70))
     bomb_rect = bomb_img.get_rect()
 
+    #Define Gameplay State Values
+    hasBomb = player1 #Start game with player 1 with bomb
+
 
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_LEFT:
+                    hasBomb.throwBomb(player2)
+                    hasBomb = player2
     
 
         screen.fill("orange")

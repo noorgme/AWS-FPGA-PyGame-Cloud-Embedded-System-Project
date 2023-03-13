@@ -7,6 +7,7 @@
 - Added basic title screen and login screen functions
 
 ## 05/03/2023
+### Noor Elsheikh
 - Fixed login screen input bar bugs
 - Added ChangeLog
 - Added basic playerconnect screen
