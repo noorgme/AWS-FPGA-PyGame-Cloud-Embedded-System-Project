@@ -129,80 +129,93 @@ def characterselect():
     numPlayers = 3
     
     cc=0
+    ccc1=0
+    ccc2=0
+    ccc3=0
     pg.display.flip()
-    characters_rect=[characters_1rect,characters_2rect, characters_3rect]
-    characters_rects=[]
-    playersss=[]
+    characters_rects=[characters_1rect,characters_2rect, characters_3rect]
+    #characters_rects=[]
     
     while True:
         for event in pg.event.get():
+            state = "Waiting"
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
             elif event.type == pg.MOUSEBUTTONUP:
-                if cc <numPlayers+2:
+                
+                if cc <numPlayers:
                     plays = play[cc]
-                    if (characters_1rect.collidepoint(pg.mouse.get_pos())):
+                  
+                    if (characters_1rect.collidepoint(pg.mouse.get_pos())) and ccc1<1:
                      #       playersss.append(player)
+                        state ="1"
                         characters_rects.append(characters_1rect)
-                        state="Character_selected"
-                        success_msg = font1.render(plays+' connected to Character1', True, black)
-                        success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +200))
-                        #font1.render('Players Connected (3-6): '+str(numPlayers), True, black)
-                        screen.blit(success_msg,success_msgrect)
-                        cc = cc+1
-                        print("successfully selected")
-                        continue
-                    elif (characters_2rect.collidepoint(pg.mouse.get_pos())):
+                        success_msg1 = font1.render(plays+' connected to Character1', True, black)
+                        success_msg1rect = success_msg1.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +100))
+                        ccc1 = ccc1+1
+                        cc+=1
+                        #print("successfully selected")
+                        
+                    elif (characters_2rect.collidepoint(pg.mouse.get_pos())) and ccc2<1:
                      #       playersss.append(player)
+                        state ="2"
                         characters_rects.append(characters_2rect)
-                        state="Character_selected"
-                        success_msg = font1.render(plays+' connected to Character2', True, black)
-                        success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +200))
-                        screen.blit(success_msg,success_msgrect)
-                        cc = cc+1
-                        print("successfully selected")
-                        continue
-                    elif (characters_3rect.collidepoint(pg.mouse.get_pos())):
+                        success_msg2 = font1.render(plays+' connected to Character2', True, black)
+                        success_msg2rect = success_msg2.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +200))
+                        ccc2 = ccc2+1
+                        cc+=1
+                       # print("successfully selected")
+                        
+                    elif (characters_3rect.collidepoint(pg.mouse.get_pos())) and ccc3<1:
                      #       playersss.append(player)
+                        state ="3"
                         characters_rects.append(characters_3rect)
-                        state="Character_selected"
-                        success_msg = font1.render(plays+' connected to Character3', True, black)
-                        success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +200))
-                        screen.blit(success_msg,success_msgrect)
-                        state ="No_character_selected"
-                        print("unsuccess")
-                        cc = cc+1
-            else:
-                state = "Waiting"
-                print("else")
+                        success_msg3 = font1.render(plays+' connected to Character3', True, black)
+                        success_msg3rect = success_msg3.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +300))
+                        ccc3 = ccc3+1
+                        cc+=1
+                        
+                
+            elif ccc3>0 and ccc2 >0 and ccc1>0:
+                state = "All_Characters_Connected"
+                #print("all")
+            if event.type == pg.KEYDOWN and state == "All_Characters_Connected":
+                game_state_manager.change_state(GameState.LOGINSCREEN)
+               # game_state_manager.run_state(MAINGAME)
+                #print("game")
+                        
                 
             screen.fill(light_grey)
+        
+             
         # for plays in play:
         # #success_msg = font1.render("Character"+str(play)" successfully selected", True, black)
         #     success_msg = font1.render(plays+' connected to Character1', True, black)
         #     success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +200))
-        waiting_msg2 = font1.render("No Character selected yet", True, black)
-        waiting_msg2rect =  waiting_msg2.get_rect(center= ((screenWidth // 2) , (screenHeight //3) -200))        
-        if state == "Waiting" :
-                    screen.blit(waiting_msg2,waiting_msg2rect)
-        elif state == "Character_selected":
-             screen.blit(success_msg,success_msgrect)
-        else:
-             screen.blit(waiting_msg2,waiting_msg2rect)
-
-           #draw squares
-        #screen.blit(waiting_msg2,waiting_msg2rect)
-        #screen.blit(waiting_msg1, (screenWidth / 2 - waiting_msg1.get_width() / 2, screenHeight - 100))
-        #screen.blit(waiting_msg1, (squares[3][0] - 60, 50))
-       
-       
-        screen.blit(characters_1,characters_1rect)
-        screen.blit(characters_2,characters_2rect)
-        screen.blit(characters_3,characters_3rect)
-        screen.blit(waiting_msg2,waiting_msg2rect)
-           # screen.blit(success_msg,success_msgrect)
-          # for i in range(0, 6-numPlayers):
+            waiting_msg2 = font1.render("No Character selected yet", True, black)
+            waiting_msg2rect =  waiting_msg2.get_rect(center= ((screenWidth // 2) , (screenHeight //3) -200))        
+            if state == "Waiting" :
+               screen.blit(waiting_msg2,waiting_msg2rect)
+            elif state == "All_Characters_Connected" :
+               screen.blit(success_msg1,success_msg1rect)
+               screen.blit(success_msg2,success_msg2rect)
+               screen.blit(success_msg3,success_msg3rect)
+               print("state_all")
+            elif state =="1" :
+               screen.blit(success_msg1,success_msg1rect)
+            elif state =="2":
+               screen.blit(success_msg2,success_msg2rect)
+            elif state =="3":
+               screen.blit(success_msg3,success_msg3rect)
+      
+      
+        # screen.blit(characters_1,characters_1rect)
+        # screen.blit(characters_2,characters_2rect)
+        # screen.blit(characters_3,characters_3rect)
+        # screen.blit(waiting_msg2,waiting_msg2rect)
+        # # screen.blit(success_msg,success_msgrect)
+        # for i in range(0, 6-numPlayers):
         #     de10rect.center = niosCoords[5-i]
         #     screen.blit(de10_trans, de10rect)
         pg.display.flip()
