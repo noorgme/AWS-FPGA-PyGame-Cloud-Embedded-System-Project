@@ -1,6 +1,7 @@
 import pygame as pg
 from enum import Enum
 from sys import exit
+from network import Network
 import os
 
 
@@ -461,13 +462,33 @@ def characterselect():
         screen.blit(characters_3,characters_3rect)
         screen.blit(waiting_msg1,waiting_msg1rect)
         pg.display.flip()
-        
+
+c = 0
+net = Network()
+
+def send_data(c):
+        """
+        Send position to server
+        :return: None
+        """
+        data = str(net.id) + ":" + str(c)
+        reply = net.send(data)
+        return reply
+
+# @staticmethod
+def parse_data(data):
+        try:
+            d = data.split(":")[1]
+            return int(d[1])
+        except:
+            return 0
+
+
+
 def maingame():
     pg.display.flip()
     #load character images
     characters = ["sarim", "bouganis", "naylor"]
-
-    #init players
     player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
     player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
     player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
@@ -478,35 +499,81 @@ def maingame():
     bomb_img = pg.image.load("img/bomb.png").convert_alpha()
     bomb_img = pg.transform.scale(bomb_img, (70, 70))
     bomb_rect = bomb_img.get_rect()
+    # fps=30
+    clock = pg.time.Clock()
 
-    #Define Gameplay State Values
-    hasBomb = player1 #Start game with player 1 with bomb
-
+    # c = 0
+    c = 0
+    initial = player1
 
     while True:
+        clock.tick(60)
+        initial = players[c]
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-            elif event.type == pg.KEYDOWN:
+            if event.type == pg.K_ESCAPE:
+                pg.quit()
+                exit()
+            if event.type == pg.KEYDOWN:
                 if event.key == pg.K_LEFT:
-                    hasBomb.throwBomb(player2)
-                    hasBomb = player2
-    
+                    c+=1
+                    if c>=len(players):
+                        c = 0
+                    #print(players[c])
+                    
+                    # bomb_rect.center = (players[-1].player_rect[0]+140, player[-1].player_rect[1]+100) 
+                    # screen.blit(bomb_img, bomb_rect)
+                    # players[d].hasBomb = True
+
+                    #print(c,"LEFT")
+                    print("Left")
+                elif event.key == pg.K_RIGHT:
+                    c-=1
+                    if c <= -len(players):
+                        c = 0
+                    # print(players[c])
+                    # initial.hasBomb = False
+                    # d = parse_data(send_data(c))
+                    # bomb_rect.center = (players[-1].player_rect[0]+140, player[-1].player_rect[1]+100) 
+                    # screen.blit(bomb_img, bomb_rect)
+                    
+                    print(c,"RIGHT")
+                    # print("Right")
+                # elif event.key == pg.K_UP:
+                #     print("Up")
+                # elif event.key == pg.K_DOWN:
+                #     print("Down")
+                
+
+
+        initial.hasBomb = False
+        d = parse_data(send_data(c))
+        print(send_data(c))
+        players[d].hasBomb = True
 
         screen.fill("orange")
         screen.blit(player1.img, player1.player_rect)
         screen.blit(player2.img, player2.player_rect)
         screen.blit(player3.img, player3.player_rect)
 
+        
+        
+
 
         for player in players:
             if (player.hasBomb):
+                #initial = player
                 
                 bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
                 screen.blit(bomb_img, bomb_rect)
+       
         
-        pg.display.flip()
+        #pg.display.flip()
+            
+        pg.display.update()
+        #fpsclock.tick(fps)
 
 
 
@@ -533,14 +600,15 @@ red = (255, 0, 0)
 
 
 #Set Fonts
-font1 = pg.font.Font(r"fonts\retro.ttf", 20)
+font1 = pg.font.Font(r"fonts/retro.ttf", 20)
 
 
 #Setup clock
 clock = pg.time.Clock()
 
 #Load Media
-titleLogo = pg.image.load(r"img\title.png").convert_alpha()
+titleLogo = pg.image.load(r"img/title.png").convert_alpha()
+
 
 def main():
     game_state_manager.run_state()
