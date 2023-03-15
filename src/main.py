@@ -10,6 +10,7 @@ proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__))))
 os.chdir(proj_folder+"\include")
 
 
+
 #define game states
 class GameState(Enum):
     TITLESCREEN = 0
