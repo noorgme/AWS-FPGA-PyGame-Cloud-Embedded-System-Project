@@ -8,6 +8,7 @@ matplotlib = "*"
 numpy = "*"
 pyserial = "*"
 tcl = "*"
+pygame = "*"
 
 [dev-packages]
 

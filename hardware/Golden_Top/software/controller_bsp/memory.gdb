@@ -3,7 +3,7 @@
 # Machine generated for CPU 'cpu' in SOPC Builder design 'nios_accelerometer'
 # SOPC Builder design path: ../../nios_accelerometer.sopcinfo
 #
-# Generated: Tue Mar 07 16:52:36 GMT 2023
+# Generated: Tue Mar 14 13:56:11 GMT 2023
 
 # DO NOT MODIFY THIS FILE
 #
@@ -47,4 +47,4 @@
 # by allowing GDB to cache memory contents on the host.
 
 # onchip_memory
-memory 0x10000 0x20000 cache
+memory 0x20000 0x40000 cache

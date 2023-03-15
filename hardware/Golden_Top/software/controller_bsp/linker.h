@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu' in SOPC Builder design 'nios_accelerometer'
  * SOPC Builder design path: ../../nios_accelerometer.sopcinfo
  *
- * Generated: Tue Mar 07 16:52:36 GMT 2023
+ * Generated: Tue Mar 14 13:56:11 GMT 2023
  */
 
 /*
@@ -65,9 +65,9 @@
  *
  */
 
-#define ONCHIP_MEMORY_REGION_BASE 0x10020
-#define ONCHIP_MEMORY_REGION_SPAN 65504
-#define RESET_REGION_BASE 0x10000
+#define ONCHIP_MEMORY_REGION_BASE 0x20020
+#define ONCHIP_MEMORY_REGION_SPAN 131040
+#define RESET_REGION_BASE 0x20000
 #define RESET_REGION_SPAN 32
 
 

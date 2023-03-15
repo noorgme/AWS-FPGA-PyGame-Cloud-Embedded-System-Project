@@ -28,7 +28,7 @@
 // ------------------------------------------
 // Generation parameters:
 //   output_name:         nios_accelerometer_mm_interconnect_0_rsp_demux
-//   ST_DATA_W:           94
+//   ST_DATA_W:           95
 //   ST_CHANNEL_W:        7
 //   NUM_OUTPUTS:         1
 //   VALID_WIDTH:         1
@@ -46,7 +46,7 @@ module nios_accelerometer_mm_interconnect_0_rsp_demux
     // Sink
     // -------------------
     input  [1-1      : 0]   sink_valid,
-    input  [94-1    : 0]   sink_data, // ST_DATA_W=94
+    input  [95-1    : 0]   sink_data, // ST_DATA_W=95
     input  [7-1 : 0]   sink_channel, // ST_CHANNEL_W=7
     input                         sink_startofpacket,
     input                         sink_endofpacket,
@@ -56,7 +56,7 @@ module nios_accelerometer_mm_interconnect_0_rsp_demux
     // Sources 
     // -------------------
     output reg                      src0_valid,
-    output reg [94-1    : 0] src0_data, // ST_DATA_W=94
+    output reg [95-1    : 0] src0_data, // ST_DATA_W=95
     output reg [7-1 : 0] src0_channel, // ST_CHANNEL_W=7
     output reg                      src0_startofpacket,
     output reg                      src0_endofpacket,
