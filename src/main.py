@@ -1,13 +1,41 @@
 import pygame as pg
 from enum import Enum
 from sys import exit
-from network import Network
+from net_thread import Network
+import threading
+import time
 import os
+# from ser_thread import get_connection
 
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
-os.chdir(proj_folder+"\include")
+os.chdir(proj_folder+"/include")
+
+
+net = Network()
+user_count = 1
+user_count_loop = True
+def get_users_count():
+    global user_count
+    global user_count_loop
+    while user_count_loop:
+        net.get_connection()
+        data = net.receive_data()
+
+        try:
+            if data:
+                user_count = data[0]
+            print(f"Running... user count: {user_count}")    
+        except: pass
+        time.sleep(3)
+
+user_count_thread = threading.Thread(target=get_users_count)
+user_count_thread.daemon = True  # allow the program to exit if this thread is still running
+user_count_thread.start()
+
+    
+
 
 
 
@@ -38,6 +66,10 @@ class GameStateManager:
             characterselect()
         elif self.current_state == GameState.MAINGAME:
             maingame()
+
+
+
+
 
 #Define player class
 class Player:
@@ -135,6 +167,7 @@ def loginscreen():
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
+        
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -273,12 +306,22 @@ def playerconnect():
 
     pg.display.flip()
     
+
+
+    # b = net.get_connection()
+    # a = net.receive_data()
+    #print("COnn" + str(a))
+    
     while True:
+      
         screen.fill(light_grey)
         clock.tick(60)
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
+        #user_count_thread
+        # if user_count != "":
+        #     print(user_count)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -286,6 +329,7 @@ def playerconnect():
                 exit()
             elif event.type == pg.MOUSEBUTTONUP:
                 if (start_msg_rect.collidepoint(pg.mouse.get_pos())):
+                    user_count_loop = False
                     game_state_manager.change_state(GameState.CHARACTERSELECT)
                     game_state_manager.run_state()
                 
@@ -296,7 +340,12 @@ def playerconnect():
         screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
 
         # Draw connected message
-        connected_msg = font1.render('Players Connected (3-6): '+str(numPlayers), True, black)
+        
+        #print("Connection:" + str(a))
+
+        # print(user_count)
+        # a = net.receive_data()
+        connected_msg = font1.render(f'Players Connected (3-6): {user_count}', True, black)
         screen.blit(connected_msg, (squares[3][0] - 60, 50))
 
         # Draw waiting message and start button
@@ -320,6 +369,13 @@ def playerconnect():
         #blit framerate
         screen.blit(framerate, framerect)
         pg.display.flip()
+        #b = net.get_connection()
+
+        # a = net.receive_data()
+        # try:
+      # except:
+        #     pass  #     a = net.receive_data()
+        
 
 # def characterselect():
    
@@ -343,6 +399,10 @@ def characterselect():
     # player2 = pg.image.load("img/sarim.png").convert_alpha()
     # player3 = pg.image.load("img/sarim.png").convert_alpha()
     # players = [player1, player2, player3]
+
+
+    
+
     characters_1 = pg.image.load("img/sarim.png").convert_alpha()
     characters_2 = pg.image.load("img/bouganis.png").convert_alpha()
     characters_3 = pg.image.load("img/naylor.png").convert_alpha()
@@ -465,24 +525,24 @@ def characterselect():
         pg.display.flip()
 
 c = 0
-net = Network()
+# net = Network()
 
-def send_data(c):
-        """
-        Send position to server
-        :return: None
-        """
-        data = str(net.id) + ":" + str(c)
-        reply = net.send(data)
-        return reply
+# def send_data(c):
+#         """
+#         Send position to server
+#         :return: None
+#         """
+#         data = str(net.id) + ":" + str(c)
+#         reply = net.send(data)
+#         return reply
 
-# @staticmethod
-def parse_data(data):
-        try:
-            d = data.split(":")[1]
-            return int(d[1])
-        except:
-            return 0
+# # @staticmethod
+# def parse_data(data):
+#         try:
+#             d = data.split(":")[1]
+#             return int(d[1])
+#         except:
+#             return 0
 
 
 
@@ -550,9 +610,9 @@ def maingame():
 
 
         initial.hasBomb = False
-        d = parse_data(send_data(c))
-        print(send_data(c))
-        players[d].hasBomb = True
+        # d = parse_data(send_data(c))
+        # print(send_data(c))
+        players[c].hasBomb = True
 
         screen.fill("orange")
         screen.blit(player1.img, player1.player_rect)
