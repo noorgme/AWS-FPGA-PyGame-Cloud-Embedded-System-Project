@@ -20,7 +20,7 @@ user_count_loop = True
 # net.get_connection()
 # user_id = net.receive_data()
 
-players = []
+player_id = 0
 
 
 def get_users_count():
@@ -168,6 +168,7 @@ def loginscreen():
     passtext = font1.render(password, True, black)
     usernameSelected = False
     pwSelected = False
+    global player_id
 
 
     while True:
@@ -197,7 +198,9 @@ def loginscreen():
 
                 elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
                     pas = net.send_pass(username,password)
+                    player_id = int(pas[-1])
                     print(pas)
+                    print("Player id is " + str(player_id))
                     # if pas == "Success": pass
                     # else: print("Incorrect password")
                     if username == "user" and password == "pass" or 1:

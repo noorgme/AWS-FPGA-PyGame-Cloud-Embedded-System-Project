@@ -11,7 +11,7 @@ class Network:
           # get local machine nam
           self.host = socket.gethostname()
           # set port numbe
-          self.port = 9990
+          self.port = 9991
           # connect to the serve
           self.clientsocket.connect((self.host, self.port))
           self.receive_thread = threading.Thread(target=self.receive_data)

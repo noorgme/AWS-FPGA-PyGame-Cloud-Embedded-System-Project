@@ -12,7 +12,7 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostname()
 
 # set port number
-port = 9990
+port = 9991
 # bind the socket to a public host and a port
 serversocket.bind((host, port))
 
@@ -69,6 +69,8 @@ def handle_client(clientsocket, addr):
                     response = "Success"
                     if response == "Success":
                         users.append(user)
+                    player_id = users.index(user) + 1
+                    response = response + ":" + str(player_id)
                     client.send(response.encode("utf-8"))
 
 
