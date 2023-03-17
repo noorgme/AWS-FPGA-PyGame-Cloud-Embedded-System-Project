@@ -46,7 +46,7 @@ def handle_client(clientsocket, addr):
             #     g = True
             # if g:
                 a = len(clients)
-                num = str(a)
+                num = "user_count:" + str(a)
                 print(num)
                 for client in clients:
                     client.send(num.encode("utf-8"))

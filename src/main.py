@@ -31,8 +31,9 @@ def get_users_count():
         data = net.receive_data()
 
         try:
-            if data:
-                user_count = data[0]
+            if "user_count" in data:
+                print("askjfnd  " + data)
+                user_count = data[-1]
             print(f"Running... user count: {user_count}")    
         except: pass
     
@@ -83,19 +84,20 @@ class GameStateManager:
 class Player:
     def __init__(self, name, character, hasBomb, isAlive, playernum):
         self.name = name
-        self.character = character
+        self.character = None
         self.hasBomb = hasBomb
         self.isAlive = isAlive
         self.playernum = playernum
-        self.img = pg.image.load("img/"+character+".png").convert_alpha()
+        # if self.character:
+        #     self.img = pg.image.load("img/"+character+".png").convert_alpha()
         if playernum == 1:
             playerpos = (screenWidth//2, screenHeight//2+200)
         if playernum == 2:
             playerpos = (screenWidth//2 - 200, screenHeight//2-100)
         if playernum == 3:
             playerpos = (screenWidth//2+200, screenHeight//2-100)
-        self.img = pg.transform.scale(self.img, (150, 150))
-        self.player_rect = self.img.get_rect(center = playerpos)
+        # self.img = pg.transform.scale(self.img, (150, 150))
+        # self.player_rect = self.img.get_rect(center = playerpos)
     
     def throwBomb(self, Player):
         print ("Bomb thrown to " + str(Player.playernum))
@@ -197,17 +199,24 @@ def loginscreen():
                     hoverColourPW = black
 
                 elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
-                    pas = net.send_pass(username,password)
-                    player_id = int(pas[-1])
-                    print(pas)
-                    print("Player id is " + str(player_id))
-                    # if pas == "Success": pass
-                    # else: print("Incorrect password")
-                    if username == "user" and password == "pass" or 1:
+                    login_reply = net.send_pass(username,password)
+                    if "Success" in login_reply:
+                        player_id = int(login_reply[-1])
+                        host_player = Player(username,None, False, True, player_id)
+                        if player_id == 1:
+                            host_player.hasBomb = True
+
                         print("username" + username + "password" + password)
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
+
+                    print(login_reply)
+                    print("Player id is " + str(player_id))
+                    # if pas == "Success": pass
+                    # else: print("Incorrect password")
+                    
                 else:
+
                     usernameSelected = False
                     pwSelected = False
                     hoverColourUser = white
@@ -320,7 +329,9 @@ def playerconnect():
                   (squares[3][0] +125, squares[3][1]+110),
                   (squares[4][0] +125, squares[4][1]+110),
                   (squares[5][0] +125, squares[5][1]+110)]
-    numPlayers = 3
+    
+    
+    
 
 
     pg.display.flip()
@@ -336,6 +347,7 @@ def playerconnect():
       
         screen.fill(light_grey)
         clock.tick(60)
+        numPlayers = int(user_count)
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
@@ -451,35 +463,38 @@ def characterselect():
 
 
     
-    cc=0
+    charsSelected=0
+    state = 0
     ccc1=0
     ccc2=0
     ccc3=0
     pg.display.flip()
 
-    play = net.get_usr()
+    play = net.get_usr().split(",")
+
     print(play)
     numPlayers = len(play)
     print("sad:", numPlayers)
     #characters_rects=[characters_1rect,characters_2rect, characters_3rect]
     #characters_rects=[]
     while True:
+        while charsSelected < numPlayers:
+            if state == 0: #player 1 select
+                Plays_msg = font1.render(play[0]+' please connect to a character'+ True, black)
+                Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150))
+
         for event in pg.event.get():
             #state = "Waiting"
-            if cc < numPlayers:
-               plays = play[cc]
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
             elif event.type == pg.MOUSEBUTTONUP:
-                if cc <numPlayers:
+                if charsSelected < numPlayers:
                     print(cc)
                     #plays = play[cc]
-                    state = "0"
-                    Plays_msg = font1.render(' please connect to a character'+plays, True, black)
-                    Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150))
+                    
                     #screen.blit(Plays_msg,Plays_msgrect)
-                    print (plays)
+                    
                     if (characters_1rect.collidepoint(pg.mouse.get_pos())) and ccc1<1:
                         state ="1"
                         success_msg1 = font1.render(plays+' connected to Character1', True, black)
