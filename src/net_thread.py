@@ -1,5 +1,7 @@
 import socket
 import threading
+import sys
+import json
 
 # create a socket object
 
@@ -57,7 +59,19 @@ class Network:
                 # return reply
         except socket.error as e:
                 return str(e)
+    def send_pass(self, username, password):
+        # data = "login:"+username + "," + password
+        data = {"username": username, "password": password}
+        data = json.dumps(data)
 
+        self.clientsocket.sendall(bytes(data,encoding="utf-8"))
+        reply = self.clientsocket.recv(2048).decode("utf-8")
+        return reply
+
+    def get_usr(self):
+        self.clientsocket.send(str.encode("get_usr:"))
+        reply = self.clientsocket.recv(2048).decode("utf-8")
+        return reply
 
     # while True:
     #     # get user input

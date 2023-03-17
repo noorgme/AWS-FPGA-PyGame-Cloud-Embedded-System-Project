@@ -1,5 +1,9 @@
 import socket
 import threading
+import json
+# from adding_player import put_player
+
+
 
 # create a socket object
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,8 +24,9 @@ print('Server listening...')
 # list to keep track of connected clients
 clients = []
 
+users = []
 
-# function to handle each client connection
+
 def handle_client(clientsocket, addr):
     print('Got a connection from %s' % str(addr))
 
@@ -29,39 +34,76 @@ def handle_client(clientsocket, addr):
     clients.append(clientsocket)
     a = len(clients)
     g = False
-    
 
-
-    while True:
-        try:
+    try:
+        while True:
             # receive data from client
             data = clientsocket.recv(2048).decode("utf-8")
             if not data:
                 clientsocket.send(str.encode("Goodbye"))
                 break
             if "Clients:" in data:
-                g = True
-            if g:
-                
+            #     g = True
+            # if g:
                 a = len(clients)
                 num = str(a)
                 print(num)
                 for client in clients:
                     client.send(num.encode("utf-8"))
-            
-            print(("Received: %s",data))
+
+            # print(("Received: %s", json.loads(data)))
+
+            if "get_usr:" in data:
+                users_str = ','.join(users) # Convert the list to a comma-separated string
+                client.send(users_str.encode('utf-8'))
+                #client.send(users.encode("utf-8"))
+
+            if "{" in data:  # check if data is not empty
+                try:
+                    decoded_data = json.loads(data)
+                    print("Received:", decoded_data)
+                    print("Received:", decoded_data['username'])
+                    user =  decoded_data['username']
+                    password = decoded_data['password']
+                    #response = put_player(user, password)
+                    response = "Success"
+                    if response == "Success":
+                        users.append(user)
+                    client.send(response.encode("utf-8"))
+
+
+                    # relay the message to all other connected clients
+                    # for client in clients:
+                    #     if client != clientsocket:
+                    #         try:
+                    #             client.send(data.encode("utf-8"))
+                    #         except socket.error:
+                    #             print('Error sending message to client')
+                    #             clients.remove(client)
+                    #             client.close()
+                except json.decoder.JSONDecodeError:
+                    print('Invalid JSON received from client')
+                    continue
+            else:
+                print('Empty message received from client')
+
 
             # relay the message to all other connected clients
-            # print(len(clients))
             # for client in clients:
             #     if client != clientsocket:
-            #         print("Sending: " + data)
-            #         client.send(data.encode("utf-8"))
-        except KeyboardInterrupt:
-            # remove the client socket from the list of clients
-            clients.remove(clientsocket)
-            clientsocket.close()
-            return
+            #         try:
+            #             client.send(data.encode("utf-8"))
+            #         except socket.error:
+            #             print('Error sending message to client')
+            #             clients.remove(client)
+            #             client.close()
+    except KeyboardInterrupt:
+        print('Server shutting down...')
+    finally:
+        # remove the client socket from the list of clients
+        clients.remove(clientsocket)
+        clientsocket.close()
+        print('Connection closed for client %s' % str(addr))
 
 
 # def get_connection():

@@ -16,6 +16,13 @@ os.chdir(proj_folder+"/include")
 net = Network()
 user_count = 1
 user_count_loop = True
+
+# net.get_connection()
+# user_id = net.receive_data()
+
+players = []
+
+
 def get_users_count():
     global user_count
     global user_count_loop
@@ -28,6 +35,7 @@ def get_users_count():
                 user_count = data[0]
             print(f"Running... user count: {user_count}")    
         except: pass
+    
         time.sleep(3)
 
 user_count_thread = threading.Thread(target=get_users_count)
@@ -188,7 +196,12 @@ def loginscreen():
                     hoverColourPW = black
 
                 elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
+                    pas = net.send_pass(username,password)
+                    print(pas)
+                    # if pas == "Success": pass
+                    # else: print("Incorrect password")
                     if username == "user" and password == "pass" or 1:
+                        print("username" + username + "password" + password)
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
                 else:
@@ -262,6 +275,9 @@ def loginscreen():
         screen.blit(framerate, framerect)
 
         pg.display.flip()
+       
+
+    
     # To-DO, code for loginscreen
 
 def playerconnect():
@@ -305,6 +321,7 @@ def playerconnect():
 
 
     pg.display.flip()
+    global user_count_loop
     
 
 
@@ -426,14 +443,21 @@ def characterselect():
     waiting_msg1rect =  waiting_msg1.get_rect(center= ((screenWidth // 2) , (screenHeight //3) -200))        
     # for player in players:
     #     player = pg.transform.scale(player, (300, 150))
-    play=["jim","noor", "shaheer"]  
-    numPlayers = 3
+    # play=["jim","noor", "shaheer"]  
+    # numPlayers = 3
+
+
     
     cc=0
     ccc1=0
     ccc2=0
     ccc3=0
     pg.display.flip()
+
+    play = net.get_usr()
+    print(play)
+    numPlayers = len(play)
+    print("sad:", numPlayers)
     #characters_rects=[characters_1rect,characters_2rect, characters_3rect]
     #characters_rects=[]
     while True:
