@@ -21,6 +21,7 @@ alt_32 z_read;
 alt_32 x_filter;
 alt_32 y_filter;
 alt_32 z_filter;
+alt_u32 LEDS = 0;
 volatile alt_u8 RECV_CHAR;
 volatile alt_u8 RECV_FLAG = 0;
 alt_u32 FILTER_HEAD = 0;
@@ -89,6 +90,15 @@ int main() {
         	if(RECV_CHAR == 'V'){
         		alt_printf("[%x,%x,%x]\n",x_filter,y_filter,z_filter);
         	}
+        	else if(RECV_CHAR == 'L'){
+        		LEDS = 1023;
+				IOWR(LED_BASE, 0, LEDS);
+        	}
+        	else if(RECV_CHAR == 'l'){
+        		 LEDS = 0;
+        		 IOWR(LED_BASE, 0, LEDS);
+        	}
+
         	RECV_FLAG = 0; //Reset flag to wait for next receive
         }
     }

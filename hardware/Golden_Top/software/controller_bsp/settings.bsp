@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>14-Mar-2023 13:56:11</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1678802171314</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>17-Mar-2023 18:39:06</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1679078346762</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/harry/info_proc_lab/FoodGame/hardware/Golden_Top/software/controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../nios_accelerometer.sopcinfo</SopcDesignFile>
