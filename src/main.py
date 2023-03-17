@@ -5,15 +5,17 @@ from net_thread import Network
 import threading
 import time
 import os
+from nios import NiosConnector
 # from ser_thread import get_connection
 
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
-os.chdir(proj_folder+"/include")
+os.chdir(os.path.join(proj_folder,"include"))
 
 
-net = Network()
+#net = Network()
+controller = NiosConnector()
 user_count = 1
 user_count_loop = True
 def get_users_count():
@@ -79,7 +81,7 @@ class Player:
         self.hasBomb = hasBomb
         self.isAlive = isAlive
         self.playernum = playernum
-        self.img = pg.image.load("img/"+character+".png").convert_alpha()
+        self.img = pg.image.load(os.path.join("img",character+".png")).convert_alpha()
         if playernum == 1:
             playerpos = (screenWidth//2, screenHeight//2+200)
         if playernum == 2:
@@ -271,7 +273,7 @@ def playerconnect():
     start_msg_rect.center = ((screenWidth / 2 - start_msg.get_width() / 2), (screenHeight - 45))
     
     
-    de10 = pg.image.load("img/de10.png").convert_alpha()
+    de10 = pg.image.load(os.path.join("img","de10.png")).convert_alpha()
     de10 = pg.transform.scale(de10, (300, 150))
     de10_trans = de10.copy()
     de10_trans.set_alpha(120)
@@ -403,9 +405,9 @@ def characterselect():
 
     
 
-    characters_1 = pg.image.load("img/sarim.png").convert_alpha()
-    characters_2 = pg.image.load("img/bouganis.png").convert_alpha()
-    characters_3 = pg.image.load("img/naylor.png").convert_alpha()
+    characters_1 = pg.image.load(os.path.join("img","sarim.png")).convert_alpha()
+    characters_2 = pg.image.load(os.path.join("img","bouganis.png")).convert_alpha()
+    characters_3 = pg.image.load(os.path.join("img","naylor.png")).convert_alpha()
 
     characters_1 = pg.transform.scale(characters_1, (300, 150))
     characters_1_trans = characters_1.copy()
