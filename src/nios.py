@@ -4,45 +4,62 @@ import re
 import binascii
 import threading, queue
 import os,  time
-
+import time
+from subprocess import Popen
+import multiprocessing as mp
+import intel_jtag_uart
+import matplotlib.pyplot as plt
 
 
 def readThread(subproc, q):
-    print(subproc.poll())
-    while subproc.poll() is None:
-        for line in subproc.stdout.readlines():
-            if(line != ''):
-                print(line)
-                q.put(line)
+    while 1:
+        line = subproc.readline()
+        if(line != ''):
+            print(line)
+            q.put(line)
 
 
 class NiosConnector():
         
     def __init__(self):
         try: 
+            # ===TEMP STUFF BECAUSE MY QUARTUS INSTALL IS MESSED UP =======
             d = dict(os.environ)
-            d['PATH'] = d['PATH']+":/home/harry/intelFPGA_lite/22.1std/quartus/linux64/"
-            d['LD_LIBRARY_PATH'] = "/home/harry/intelFPGA_lite/22.1std/quartus/linux64/"
-            self._subprocess = subprocess.Popen(["~/intelFPGA_lite/22.1std/quartus/linux64/nios2-terminal"], shell=True,env=d, executable="/bin/bash", stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding='utf-8')
-            self._readQueue = queue.Queue()
-            self._readThread = threading.Thread(target=readThread, args = (self._subprocess,self._readQueue))
-            self._readThread.daemon = True
-            self._readThread.start()
+            # d['PATH'] = d['PATH']+":/home/harry/intelFPGA_lite/22.1std/quartus/linux64/"
+            # d['LD_LIBRARY_PATH'] = "/home/harry/intelFPGA_lite/22.1std/quartus/linux64/"
+            #os.environ['LD_LIBRARY_PATH'] = d['LD_LIBRARY_PATH']+"/home/harry/intelFPGA_lite/22.1std/quartus/linux64/"
+            
+            self._niosBridge = intel_jtag_uart.intel_jtag_uart()
+            # ===========
+            # self._subprocess = subprocess.Popen(["~/intelFPGA_lite/22.1std/quartus/linux64/nios2-terminal"], 
+            #                                     shell=True, 
+            #                                     env=d,
+            #                                     executable="/bin/bash", 
+            #                                     stdin=subprocess.PIPE, 
+            #                                     stdout=subprocess.PIPE, 
+            #                                     encoding='utf-8',
+            #                                     universal_newlines=True
+            #                                 )
+            # self._readQueue = mp.Queue()
+            # self._readThread = mp.Process(target=readThread, args = (self._subprocess.stdout,self._readQueue))
+            # self._readThread.daemon = True
+            # self._readThread.start()
+            
         except Exception as e:
             try:
-                self._subprocess.terminate()
+                # self._subprocess.terminate()
+                None
             except AttributeError: # If _subprocess haven't been assigned yet.
                 None
             raise e
         finally:
-            self._subprocess.terminate()
+            # self._subprocess.terminate()
+            None
 
     def getVector(self) -> np.ndarray:
-        try:
-            self._subprocess.stdin.write('V')
-            return self._parseVector(self._readQueue.get())
-        except TimeoutError:
-            raise TimeoutError("NIOS COMMUNICATION TIMEOUT!!")
+        self._niosBridge.write(b'V')
+        return self._parseVector(self._niosBridge.read().decode().rstrip())
+
 
     # hex string to signed integer
     def _hexToInt(self, val:str) -> int:
@@ -67,3 +84,20 @@ class NiosConnector():
     
     def close(self):
         self._subprocess.terminate()
+        
+        
+# Testing code
+if __name__ == "__main__":
+    controller = NiosConnector()
+    fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
+    plt.ion()
+    plt.show()
+    while 1:
+        vector = controller.getVector()
+        ax.clear()
+        ax.quiver([0],[0],[0],[vector[0]],[vector[1]],[vector[2]])
+        #print("Vector", vector)
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        plt.draw()
+        plt.pause(0.0001)

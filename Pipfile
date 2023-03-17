@@ -9,6 +9,8 @@ numpy = "*"
 pyserial = "*"
 tcl = "*"
 pygame = "*"
+intel-jtag-uart = "*"
+pyqt5 = "*"
 
 [dev-packages]
 
