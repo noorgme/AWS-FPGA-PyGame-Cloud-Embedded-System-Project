@@ -22,27 +22,57 @@ user_count_loop = True
 
 player_id = 0
 host_player = 0
+players = []
+get_players_loop = False
 
 
 def get_users_count():
     global user_count
     global user_count_loop
-    while user_count_loop:
-        net.get_connection()
-        data = net.receive_data()
+    global get_players_loop
+    global players
+    if user_count_loop:
+        while user_count_loop:
+            net.get_connection()
+            data = net.receive_data()
+            print("Run usr count")
 
-        try:
-            if "user_count" in data:
-                print("askjfnd  " + data)
-                user_count = data[-1]
-            print(f"Running... user count: {user_count}")    
-        except: pass
-    
-        time.sleep(3)
+            try:
+                if "user_count" in data:
+                    user_count = data[-1]
+                print(f"Running... user count: {user_count}")    
+            except: pass
+        
+            time.sleep(3)
+    elif get_players_loop:
+        while get_players_loop:
+            net.get_usd()
+            data = net.receive_data()
+            print("Get Players")
+
+            try:
+                if data:
+                    players = data
+                print(f"Running... player: {players}")    
+            except: pass
+        
+            time.sleep(3)
+
 
 user_count_thread = threading.Thread(target=get_users_count)
 user_count_thread.daemon = True  # allow the program to exit if this thread is still running
 user_count_thread.start()
+
+
+# def get_no_users():
+#     global players
+#     global get_players_loop
+#     while get_players_loop:
+#         players = net.get_usr()
+#         time.sleep(3)
+
+
+
 
     
 
@@ -294,6 +324,9 @@ def loginscreen():
     # To-DO, code for loginscreen
 
 def playerconnect():
+
+    
+
     waiting_msg = font1.render('Waiting for players to connect...', True, black)
     start_msg = font1.render('Start game', True, black)
     start_msg_rect = start_msg.get_rect()
@@ -337,6 +370,8 @@ def playerconnect():
 
     pg.display.flip()
     global user_count_loop
+
+    
     
 
 
@@ -378,6 +413,10 @@ def playerconnect():
 
         # print(user_count)
         # a = net.receive_data()
+
+
+
+
         connected_msg = font1.render(f'Players Connected (3-6): {user_count}', True, black)
         screen.blit(connected_msg, (squares[3][0] - 60, 50))
 
@@ -433,6 +472,8 @@ def characterselect():
     # player3 = pg.image.load("img/sarim.png").convert_alpha()
     # players = [player1, player2, player3]
 
+    
+
 
     
 
@@ -464,11 +505,21 @@ def characterselect():
     whoSelecting = 1
     pg.display.flip()
     global hostID
+    global get_players_loop, user_count_loop
+    user_count_loop = False
     hostID = host_player.playernum
+    get_players_loop = True
+
+    # player_count_thread = threading.Thread(target=get_no_users)
+    # player_count_thread.daemon = True  # allow the program to exit if this thread is still running
+    # player_count_thread.start()
+
+
     play = net.get_usr().split(",")
 
     print(play)
     numPlayers = len(play)
+    print("User ID:", hostID)
     print("sad:", numPlayers)
     while True:
         screen.fill(light_grey)
@@ -483,7 +534,7 @@ def characterselect():
             screen.blit(characters_3_trans, characters_3rect)
             screen.blit(waiting_msg1, waiting_msg1rect)
             #config and blit whos turn it is message
-            Plays_msg = font1.render(play[whoSelecting]+' please connect to a character'+ True, black)
+            Plays_msg = font1.render(play[whoSelecting]+' please connect to a character', True, black)
             Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150))
             screen.blit(Plays_msg,Plays_msgrect)
 
@@ -541,6 +592,7 @@ def characterselect():
                 exit()
 
             elif event.type == pg.KEYDOWN:
+                player_count_thread = False
                 game_state_manager.change_state(GameState.MAINGAME)
                 game_state_manager.run_state()
 
