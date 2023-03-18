@@ -2,12 +2,12 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>07-Mar-2023 16:52:36</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1678207956182</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>17-Mar-2023 18:39:06</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1679078346762</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/harry/info_proc_lab/FoodGame/hardware/Golden_Top/software/controller_bsp</BspGeneratedLocation>
-        <BspSettingsFile>./settings.bsp</BspSettingsFile>
+        <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../nios_accelerometer.sopcinfo</SopcDesignFile>
-        <SystemFileHash>7fdfd1db181c3c4c85282904e51ee2b5a47be29e1fc81f3ec7fbb1296b7577</SystemFileHash>
+        <SystemFileHash>21eb6b3cac35bb2729716fe934c717e6c24e257069c864dda2fe3c7730bf70da</SystemFileHash>
         <JdiFile>default</JdiFile>
         <Cpu>cpu</Cpu>
         <SchemaVersion>1.9</SchemaVersion>
@@ -901,37 +901,37 @@
         </Setting>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory</slaveDescriptor>
-                <addressRange>0x00010000 - 0x0001FFFF</addressRange>
-                <addressSpan>65536</addressSpan>
+                <addressRange>0x00020000 - 0x0003FFFF</addressRange>
+                <addressSpan>131072</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>timer</slaveDescriptor>
-                <addressRange>0x00021000 - 0x0002101F</addressRange>
+                <addressRange>0x00041000 - 0x0004101F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>led</slaveDescriptor>
-                <addressRange>0x00021020 - 0x0002102F</addressRange>
+                <addressRange>0x00041020 - 0x0004102F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sysid_qsys</slaveDescriptor>
-                <addressRange>0x00021030 - 0x00021037</addressRange>
+                <addressRange>0x00041030 - 0x00041037</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart</slaveDescriptor>
-                <addressRange>0x00021038 - 0x0002103F</addressRange>
+                <addressRange>0x00041038 - 0x0004103F</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>accelerometer_spi</slaveDescriptor>
-                <addressRange>0x00021040 - 0x00021041</addressRange>
+                <addressRange>0x00041040 - 0x00041041</addressRange>
                 <addressSpan>2</addressSpan>
                 <attributes/>
         </MemoryMap>
