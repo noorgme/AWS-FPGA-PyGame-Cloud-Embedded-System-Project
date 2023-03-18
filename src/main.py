@@ -7,7 +7,7 @@ import os
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
-os.chdir(proj_folder+"\include")
+os.chdir(os.path.join(proj_folder,"include"))
 #define game states
 class GameState(Enum):
     TITLESCREEN = 0
@@ -41,7 +41,7 @@ class Player:
         self.hasBomb = hasBomb
         self.isAlive = isAlive
         self.playernum = playernum
-        self.img = pg.image.load("img/"+character+".png").convert_alpha()
+        self.img = pg.image.load(os.path.join("img",character+".png")).convert_alpha()
         if playernum == 1:
             playerpos = (screenWidth//2, screenHeight//2+200)
         if playernum == 2:
@@ -195,7 +195,7 @@ def playerconnect():
     start_msg_rect.center = ((screenWidth / 2 - start_msg.get_width() / 2), (screenHeight - 45))
     
     
-    de10 = pg.image.load("img/de10.png").convert_alpha()
+    de10 = pg.image.load(os.path.join("img","de10.png")).convert_alpha()
     de10 = pg.transform.scale(de10, (300, 150))
     de10_trans = de10.copy()
     de10_trans.set_alpha(120)
@@ -285,9 +285,9 @@ def characterselect():
     # player2 = pg.image.load("img/sarim.png").convert_alpha()
     # player3 = pg.image.load("img/sarim.png").convert_alpha()
     # players = [player1, player2, player3]
-    characters_1 = pg.image.load("img/sarim.png").convert_alpha()
-    characters_2 = pg.image.load("img/bouganis.png").convert_alpha()
-    characters_3 = pg.image.load("img/naylor.png").convert_alpha()
+    characters_1 = pg.image.load(os.path.join("img","sarim.png")).convert_alpha()
+    characters_2 = pg.image.load(os.path.join("img","bouganis.png")).convert_alpha()
+    characters_3 = pg.image.load(os.path.join("img","naylor.png")).convert_alpha()
     characters_1 = pg.transform.scale(characters_1, (300, 150))
     characters_1_trans = characters_1.copy()
     characters_1_trans.set_alpha(120)#Pass 0 for invisible and 255 for fully opaque.
@@ -436,7 +436,7 @@ def maingame():
     player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
     players = [player1, player2, player3]
     #load bomb
-    bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+    bomb_img = pg.image.load(os.path.join('img','bomb.png')).convert_alpha()
     bomb_img = pg.transform.scale(bomb_img, (70, 70))
     bomb_rect = bomb_img.get_rect()
     # fps=30
@@ -539,14 +539,14 @@ red = (255, 0, 0)
 
 #Set Fonts
 
-font1 = pg.font.Font(r"fonts/retro.ttf", 20)
+font1 = pg.font.Font(os.path.join("fonts","retro.ttf"), 20)
 
 
 #Setup clock
 clock = pg.time.Clock()
 
 #Load Media
-titleLogo = pg.image.load(r"img/title.png").convert_alpha()
+titleLogo = pg.image.load(os.path.join("img","title.png")).convert_alpha()
 
 
 def main():
