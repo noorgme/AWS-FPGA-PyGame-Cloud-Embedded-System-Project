@@ -6,7 +6,7 @@ import os
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
-os.chdir(proj_folder+"\include")
+os.chdir(proj_folder+"/include")
 
 
 #define game states
