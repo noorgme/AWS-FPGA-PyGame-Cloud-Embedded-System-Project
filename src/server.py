@@ -1,7 +1,6 @@
 import socket
 from _thread import *
 import sys
-# import adding_player
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
