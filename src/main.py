@@ -3,11 +3,23 @@ from enum import Enum
 from sys import exit
 from network import Network
 import os
+from nios import NiosConnector
 
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
 os.chdir(os.path.join(proj_folder,"include"))
+#controller = NiosConnector()
+
+def quitGame():
+    try:
+        controller.close() # Close connection to controller to stop terminal hangs
+    except NameError:
+        None
+    # TODO: Put network disconnection code in here
+    pg.quit()
+    exit()
+
 #define game states
 class GameState(Enum):
     TITLESCREEN = 0
@@ -68,8 +80,7 @@ def titlescreen():
         framerect.bottomright = (screenWidth-10, screenHeight-20)
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                pg.quit()
-                exit()
+                quitGame()
             if event.type == pg.KEYDOWN:
                 game_state_manager.change_state(GameState.LOGINSCREEN)
                 game_state_manager.run_state()
@@ -112,8 +123,7 @@ def loginscreen():
         framerect.bottomright = (screenWidth-10, screenHeight-20)
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                pg.quit()
-                exit()
+                quitGame()
             elif event.type == pg.MOUSEBUTTONUP:
                 if (username_input_rect.collidepoint(pg.mouse.get_pos())):
                     usernameSelected = True
@@ -230,8 +240,7 @@ def playerconnect():
         framerect.bottomright = (screenWidth-10, screenHeight-20)
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                pg.quit()
-                exit()
+                quitGame()
             elif event.type == pg.MOUSEBUTTONUP:
                 if (start_msg_rect.collidepoint(pg.mouse.get_pos())):
                     game_state_manager.change_state(GameState.CHARACTERSELECT)
@@ -271,8 +280,7 @@ def playerconnect():
 #     while True:
 #         for event in pg.event.get():
 #             if event.type == pg.QUIT:
-#                 pg.quit()
-#                 exit()
+#                 quitGame()
 #         screen.fill(light_grey)
 #         pg.display.flip()
 def characterselect():
@@ -321,8 +329,7 @@ def characterselect():
             if cc < numPlayers:
                plays = play[cc]
             if event.type == pg.QUIT:
-                pg.quit()
-                exit()
+                quitGame()
             elif event.type == pg.MOUSEBUTTONUP:
                 if cc <numPlayers:
                     print(cc)
@@ -450,12 +457,11 @@ def maingame():
         initial = players[c]
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                pg.quit()
-                exit()
+                quitGame()
 
             if event.type == pg.K_ESCAPE:
-                pg.quit()
-                exit()
+                quitGame()
+                
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_LEFT:
                     
