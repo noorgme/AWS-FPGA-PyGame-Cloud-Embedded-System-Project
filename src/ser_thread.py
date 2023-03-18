@@ -34,7 +34,6 @@ char_select = 0
 def handle_client(clientsocket, addr):
     global char_select
     global users
-    global selected_char
     print('Got a connection from %s' % str(addr))
 
     # add the client socket to the list of clients
@@ -52,12 +51,12 @@ def handle_client(clientsocket, addr):
             if "Clients:" in data:
             #     g = True
             # if g:
-                a = len(users)
+                a = len(clients)
                 num = "user_count:" + str(a)
                 print(num)
-                # for id, (socket, address) in clients.items():
-                #      socket.send(num.encode("utf-8"))
-                clientsocket.send(num.encode("utf-8"))
+                for id, (socket, address) in clients.items():
+                     socket.send(num.encode("utf-8"))
+                #clientsocket.send(num.encode("utf-8"))
 
             # print(("Received: %s", json.loads(data)))
 
@@ -69,26 +68,17 @@ def handle_client(clientsocket, addr):
                 clientsocket.send(users_str.encode('utf-8'))
 
             elif "Character_Selected:" in data:
-                print(data)
-                
-                
-                # d = data.split(":")
-                # print(d, "len ", len(d))
-                if data[-1] == ":":
-                    print("sending empty")
-                    e = "Character_Selected:"
-
-                else:
+                print("Character_Selected" + data)
+                try:
+                    char_select +=1
+                    print("char_select " +char_select)
                     d = data.split(":")
-                    print("sending ", d[1])
                     selected_char.append(d[1])
                     ef = ','.join(selected_char)
                     e = "Character_Selected:" + ef
-                    char_select +=1
-                    print("char_select ", char_select)
-                
-                clientsocket.send(e.encode("utf-8"))
-                
+                    clientsocket.send(e.encode("utf-8"))
+                except:
+                    pass
                     # if client != clientsocket:
                     #         try:
                     #             client.send(data.encode("utf-8"))
@@ -109,8 +99,7 @@ def handle_client(clientsocket, addr):
                     #response = put_player(user, password)
                     response = "Success"
                     if response == "Success":
-                        if user not in users:
-                            users.append(user)
+                        users.append(user)
                     player_id = users.index(user) #+1
                     response = response + ":" + str(player_id)
                     clientsocket.send(response.encode("utf-8"))

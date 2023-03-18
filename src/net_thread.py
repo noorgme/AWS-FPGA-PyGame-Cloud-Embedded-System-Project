@@ -15,8 +15,8 @@ class Network:
           self.port = 9991
           # connect to the serve
           self.clientsocket.connect((self.host, self.port))
-        #   self.receive_thread = threading.Thread(target=self.receive_data)
-        #   self.receive_thread.start()
+          self.receive_thread = threading.Thread(target=self.receive_data)
+          self.receive_thread.start()
           # function to handle receiving data from the server
     def receive_data(self):
         # while True:
@@ -32,7 +32,7 @@ class Network:
                 #     continue
 
                 # decode and print the data
-                    # print(data)   
+                    print(data)   
                     return data
                 except socket.timeout:
                     print("timeout")
@@ -49,15 +49,7 @@ class Network:
 
     def get_connection(self):
         self.clientsocket.send(str.encode("Clients:"))
-        time.sleep(0.1)
-        try:
-            reply = self.clientsocket.recv(2048).decode("utf-8")
-            if "user_count:" in reply:
-                 reply = reply[-1]
-        except:
-            reply = ""
-
-        return reply
+        return 0
 
     # send data to the server
     def send_data(self,data):
@@ -68,37 +60,22 @@ class Network:
                 # return reply
         except socket.error as e:
                 return str(e)
-        
-
-
     def send_pass(self, username, password):
         # data = "login:"+username + "," + password
         data = {"username": username, "password": password}
         data = json.dumps(data)
 
         self.clientsocket.sendall(bytes(data,encoding="utf-8"))
-        time.sleep(0.3)
-        try:
-            reply = self.clientsocket.recv(2048).decode("utf-8")
-        except:
-            reply = ""
+        reply = self.clientsocket.recv(2048).decode("utf-8")
         return reply
 
     def get_usr(self):
         self.clientsocket.send(str.encode("get_usr:"))
         time.sleep(0.3)
-        try:
-            reply = self.clientsocket.recv(2048).decode("utf-8")
-            if "usr" in reply:
-                reply = reply.split(":")
-                try:
-                    reply = reply[1]
-                except:
-                    reply = ""
-        except:
-             reply = ""
+        reply = self.clientsocket.recv(2048).decode("utf-8")
+        if "usr" in reply:
         #reply = self.clientsocket.recv(2048).decode("utf-8")
-        return reply
+            return reply
 
     def char_select(self):
         self.clientsocket.send(str.encode("char_select:"))
@@ -106,24 +83,16 @@ class Network:
 
     def recieve_char(self, char=None):
         if char == None:
-             char = "Character_Selected:"
+             self.clientsocket.send(str.encode("Character_Selected:"))
         else:
             char = "Character_Selected:" + char
-        self.clientsocket.send(str.encode(char))
-        time.sleep(0.1)
-        b = ''
+            self.clientsocket.send(str.encode(char))
+        a = self.clientsocket.recv(2048).decode("utf-8")
+        a = a.split(":")
         try:
-            a = self.clientsocket.recv(2048).decode("utf-8")
-            a = a.split(":")
-            if len(a) > 1:
-                b = a[1]
-        #     try:
-        #         b = a[1].split(",")
-        #     except:
-        #         b = a
-        #         return b
+            b = a[1].split(",")
         except:
-              pass
+             b = a
         return b
           
 
