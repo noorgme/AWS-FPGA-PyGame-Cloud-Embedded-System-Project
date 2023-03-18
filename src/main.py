@@ -238,7 +238,7 @@ def loginscreen():
                             host_player.hasBomb = True
 
                         print("username" + username + "password" + password)
-                        game_state_manager.change_state(GameState.PLAYERCONNECT)
+                        game_state_manager.change_state(GameState.CHARACTERSELECT)
                         game_state_manager.run_state()
 
                     print(login_reply)
@@ -671,7 +671,7 @@ def characterselect():
  
         pg.display.flip()
 
-c = 0
+
 # net = Network()
 
 # def send_data(c):
@@ -697,7 +697,27 @@ def maingame():
     global host_player
     global play
     pg.display.flip()
+
     #load character images
+    playerimgWidth = 200
+    playerimgHeight = 200
+    player1img = pg.image.load("img/"+str(play[0])+".png").convert_alpha()
+    player2img = pg.image.load("img/"+str(play[1])+".png").convert_alpha()
+    player3img = pg.image.load("img/"+str(play[2])+".png").convert_alpha()
+    player1img = pg.transform.scale(player1img, (playerimgWidth, playerimgHeight))
+    player2img = pg.transform.scale(player2img, (playerimgWidth, playerimgHeight))
+    player3img = pg.transform.scale(player3img, (playerimgWidth, playerimgHeight))
+    player1imgrect = player1img.get_rect()
+    player2imgrect = player2img.get_rect()
+    player3imgrect = player3img.get_rect()
+    player1imgrect.center = (0, 600)
+    player2imgrect.center = (-200, 400)
+    player3imgrect.center = (200, 400 )
+
+    screen.blit(player1img, player1imgrect)
+    screen.blit(player1img, player1imgrect)
+    screen.blit(player1img, player1imgrect)
+    
 
     
 
@@ -709,57 +729,70 @@ def maingame():
     # fps=30
     clock = pg.time.Clock()
     hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the start
-    if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
-        
-        while True:
-            clock.tick(60)
-            initial = players[c]
+    bombDuration = 60
+    timerstart = pg.time.get_ticks()
+    while True:
+        screen.fill("orange")
+        if hasBomb == 1:
+            bomb_rect.center = (player1imgrect[0]+140, player1imgrect[1]+100)
+        elif hasBomb == 2:
+            bomb_rect.center = (player2imgrect[0]+140, player2imgrect[1]+100)
+        elif hasBomb == 3:
+            bomb_rect.center = (player3imgrect[0]+140, player3imgrect[1]+100)
+        screen.blit(bomb_img, bomb_rect)
+        clock.tick(60)
+        elapsedtime = (pg.time.get_ticks() - timerstart) // 1000
+        remaining_time = bombDuration - elapsedtime
+        timertext = font1.render(str(remaining_time), True, "red")
+        timertextrect = timertext.get_rect()
+        timertextrect.center = (screenWidth//2, screenHeight//2)
+        screen.blit(timertext, timertextrect)
+        if remaining_time == 0:
+            print(play[hasBomb] + "is the loser!")
+
+        if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
             for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    exit()
-                if event.type == pg.K_ESCAPE:
-                    pg.quit()
-                    exit()
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
-                        c+=1
-                        if c>=len(players):
-                            c = 0
-
-                        print("Left")
+                        if host_player.playernum == 1:
+                            hasBomb = 2 # passed to player 2
+                            #to-do: pass hasBomb to server so server knows player 2 now has bomb
+                        elif host_player.playernum == 2:
+                            hasBomb = 3
+                            #to-do pass hasBomb to server
+                        else:
+                            hasBomb = 1
                     elif event.key == pg.K_RIGHT:
+                        if host_player.playernum == 1:
+                            hasBomb = 3
+                            #todo: pass to server
+                        elif host_player.playernum == 2:
+                            hasBomb = 1
+                            #todo: pass to server
+                        else:
+                            hasBomb = 2
+                            #todo: pass to server
+        else: #i dont have bomb
+            while hasBomb != host_player.playernum: #while i dont have bomb, check who has bomb
+                #todo: function to get hasBomb from server
+                trash = 1
+                #i.e. hasBomb = server.get()
 
-                        print(c,"RIGHT")
-
-
-
-        initial.hasBomb = False
-        # d = parse_data(send_data(c))
-        # print(send_data(c))
-        players[c].hasBomb = True
-
-        screen.fill("orange")
-        screen.blit(player1.img, player1.player_rect)
-        screen.blit(player2.img, player2.player_rect)
-        screen.blit(player3.img, player3.player_rect)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
 
         
-        
 
 
-        for player in players:
-            if (player.hasBomb):
-                #initial = player
-                
-                bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
-                screen.blit(bomb_img, bomb_rect)
-       
-        
-        #pg.display.flip()
             
+
+            
+            #pg.display.flip()
+                
         pg.display.update()
-        #fpsclock.tick(fps)
+            #fpsclock.tick(fps)
 
 
 
