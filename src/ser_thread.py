@@ -26,10 +26,14 @@ clients = {}
 
 users = []
 
+selected_char = []
+
 char_select = 0
 
 
 def handle_client(clientsocket, addr):
+    global char_select
+    global users
     print('Got a connection from %s' % str(addr))
 
     # add the client socket to the list of clients
@@ -57,9 +61,24 @@ def handle_client(clientsocket, addr):
             # print(("Received: %s", json.loads(data)))
 
             elif "get_usr:" in data:
+                print(data)
                 users_str = ','.join(users) # Convert the list to a comma-separated string
                 # for client in clients:
+                users_str = "usr:" + users_str
                 clientsocket.send(users_str.encode('utf-8'))
+
+            elif "Character_Selected:" in data:
+                print("Character_Selected" + data)
+                try:
+                    char_select +=1
+                    print("char_select " +char_select)
+                    d = data.split(":")
+                    selected_char.append(d[1])
+                    ef = ','.join(selected_char)
+                    e = "Character_Selected:" + ef
+                    clientsocket.send(e.encode("utf-8"))
+                except:
+                    pass
                     # if client != clientsocket:
                     #         try:
                     #             client.send(data.encode("utf-8"))
@@ -101,7 +120,7 @@ def handle_client(clientsocket, addr):
             elif "char_select:" in data:
                 data = data + str(char_select)
                 clientsocket.send(data.encode("utf-8"))
-            elif 
+            # elif 
                     
                     
                 

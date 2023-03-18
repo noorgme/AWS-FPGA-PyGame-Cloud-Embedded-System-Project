@@ -2,6 +2,7 @@ import socket
 import threading
 import sys
 import json
+import time
 
 # create a socket object
 
@@ -70,8 +71,30 @@ class Network:
 
     def get_usr(self):
         self.clientsocket.send(str.encode("get_usr:"))
+        time.sleep(0.3)
         reply = self.clientsocket.recv(2048).decode("utf-8")
-        return reply
+        if "usr" in reply:
+        #reply = self.clientsocket.recv(2048).decode("utf-8")
+            return reply
+
+    def char_select(self):
+        self.clientsocket.send(str.encode("char_select:"))
+        return 0
+
+    def recieve_char(self, char=None):
+        if char == None:
+             self.clientsocket.send(str.encode("Character_Selected:"))
+        else:
+            char = "Character_Selected:" + char
+            self.clientsocket.send(str.encode(char))
+        a = self.clientsocket.recv(2048).decode("utf-8")
+        a = a.split(":")
+        try:
+            b = a[1].split(",")
+        except:
+             b = a
+        return b
+          
 
     # while True:
     #     # get user input

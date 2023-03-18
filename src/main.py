@@ -461,6 +461,27 @@ def playerconnect():
 
 #         screen.fill(light_grey)
 #         pg.display.flip()
+
+net2 = Network()
+
+whoSelecting = 0
+
+def get_char_select():
+    global whoSelecting
+    while True:
+        net2.char_select()
+        a = net2.receive_data()
+        if "char_select:" in a:
+            whoSelecting = int(a[-1])
+
+        time.sleep(3)
+
+
+play = ""
+
+
+
+
 def characterselect():
     #  #load character images
     # characters = ["sarim", "bouganis", "naylor"]
@@ -473,7 +494,7 @@ def characterselect():
     # players = [player1, player2, player3]
 
     
-
+    global play
 
     
 
@@ -502,7 +523,7 @@ def characterselect():
 
     
     charsSelected=0
-    whoSelecting = 1
+    global whoSelecting
     pg.display.flip()
     global hostID
     global get_players_loop, user_count_loop
@@ -510,18 +531,35 @@ def characterselect():
     hostID = host_player.playernum
     get_players_loop = True
 
-    # player_count_thread = threading.Thread(target=get_no_users)
-    # player_count_thread.daemon = True  # allow the program to exit if this thread is still running
-    # player_count_thread.start()
+  
 
+    # try:
+    #     play = net.get_usr().split(",")
+    # except:
+    #     play = net.get_usr()
+    #     numPlayers = 1
+    play = net2.get_usr()
+    numPlayers = 1
 
-    play = net.get_usr().split(",")
+    if "," in play:
+        play = play.split(",")
+        numPlayers = len(play)
+    
+    global whoSelecting
 
     print(play)
-    numPlayers = len(play)
-    print("User ID:", hostID)
+    
+    print("User ID:", player_id)
     print("sad:", numPlayers)
+
+    player_count_thread = threading.Thread(target=get_char_select)
+    player_count_thread.daemon = True  # allow the program to exit if this thread is still running
+    player_count_thread.start()
+
+
+
     while True:
+        selected_char = net.recieve_char()
         screen.fill(light_grey)
         screen.blit(characters_1_trans, characters_1rect)
         screen.blit(characters_2_trans, characters_2rect)
@@ -544,25 +582,28 @@ def characterselect():
                     pg.quit()
                     exit()
             if whoSelecting != player_id:#i am not selecting
-                if ["""(NEW whoSelecting value from DB) != whoSelecting (current whoSelecting value)"""]: #TO-DO
-                    #TO-DO ANOTHER PLAYER HAS SELECTED! APPEND WHO THEY SELECTED IN A SELECTED CHARACTERS ARRAY, THEN UPDATE whoSelected variable
-                    
-                    success_msg = font1.render(play[whoSelecting]+' has chosen a' + """selectedCharactersArray[-1]""", True, black) #TO-DO: SELECTED CHARACTER
-                else:
 
-                    success_msg = font1.render(play[whoSelecting]+' is choosing a character', True, black)
+                # if ["""(NEW whoSelecting value from DB) != whoSelecting (current whoSelecting value)"""]: #TO-DO
+                #     #TO-DO ANOTHER PLAYER HAS SELECTED! APPEND WHO THEY SELECTED IN A SELECTED CHARACTERS ARRAY, THEN UPDATE whoSelected variable
+                    
+                #     success_msg = font1.render(play[whoSelecting]+' has chosen a' + """selectedCharactersArray[-1]""", True, black) #TO-DO: SELECTED CHARACTER
+                # else:
+
+                success_msg = font1.render(play[whoSelecting]+' is choosing a character', True, black)
                 #GET WHAT CHARACTERSS SELECTED FROM DB
                 
                 success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
 
             else:
-                if (event.type == pg.MOUSEBUTTONUP): #my turn to select character
+                if (event.type == pg.MOUSEBUTTONUP): 
+                    success_msg = font1.render('Please choose a character', True, black)#my turn to select character
 
                     if characters_1rect.collidepoint(pg.mouse.get_pos()): 
-                        if CHARACTERNOTSELECTED: # TO-DO: CHECK IF CHARACTER IS ALREADY IN SELECTED CHARACTERS ARRAY
+                        if "sarim" not in selected_char: # TO-DO: CHECK IF CHARACTER IS ALREADY IN SELECTED CHARACTERS ARRAY
                             host_player.character = "sarim"
                             success_msg = font1.render(play[whoSelecting]+' selected Prof Baig', True, black)
                             charsSelected += 1
+                            selected_char = net2.send_char(host_player.character)
                         else:
                             success_msg = font1.render("Character selected, please select another one", True, black)
                         ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
@@ -570,18 +611,33 @@ def characterselect():
                         screen.blit(success_msg,success_msgrect)    
 
                     elif characters_2rect.collidepoint(pg.mouse.get_pos()): #TO-DO: AND CHARACTER NOT ALREADY SELECTED
-                        host_player.character = "sarim"
-                        success_msg = font1.render(play[whoSelecting]+' selected Prof Bouganis', True, black)
+                        if "bouganis" not in selected_char:
+                            host_player.character = "bouganis"
+                            success_msg = font1.render(play[whoSelecting]+'selected Prof Bouganis', True, black)
+                            charsSelected += 1
+                            selected_char = net2.send_char(host_player.character)
+
+                        else:
+                            success_msg = font1.render("Character selected, please select another one", True, black)
+                        ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
                         success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                        screen.blit(success_msg,success_msgrect)    
-                        charsSelected += 1
+                        screen.blit(success_msg,success_msgrect) 
+                        
                         ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
                     elif characters_2rect.collidepoint(pg.mouse.get_pos()): #TO-DO: AND CHARACTER NOT ALREADY SELECTED
-                        host_player.character = "sarim"
-                        success_msg = font1.render(play[whoSelecting]+' selected Prof Naylor', True, black)
+                        if "naylor" not in selected_char:
+                            host_player.character = "naylor"
+                            success_msg = font1.render(play[whoSelecting]+'selected Prof Naylor', True, black)
+                            charsSelected += 1
+                            selected_char = net2.send_char(host_player.character)
+
+                        else:
+                            success_msg = font1.render("Character selected, please select another one", True, black)
+                        ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
                         success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                        screen.blit(success_msg,success_msgrect)    
-                        charsSelected += 1
+                        screen.blit(success_msg,success_msgrect) 
+                       
+                    
                         ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
         screen.blit(success_msg,success_msgrect)
         pg.display.flip()         
@@ -638,13 +694,12 @@ c = 0
 
 
 def maingame():
+    global host_player
+    global play
     pg.display.flip()
     #load character images
-    characters = ["sarim", "bouganis", "naylor"]
-    player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
-    player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
-    player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
-    players = [player1, player2, player3]
+
+    
 
 
     #load bomb
@@ -653,51 +708,30 @@ def maingame():
     bomb_rect = bomb_img.get_rect()
     # fps=30
     clock = pg.time.Clock()
+    hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the start
+    if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
+        
+        while True:
+            clock.tick(60)
+            initial = players[c]
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    exit()
+                if event.type == pg.K_ESCAPE:
+                    pg.quit()
+                    exit()
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_LEFT:
+                        c+=1
+                        if c>=len(players):
+                            c = 0
 
-    # c = 0
-    c = 0
-    initial = player1
+                        print("Left")
+                    elif event.key == pg.K_RIGHT:
 
-    while True:
-        clock.tick(60)
-        initial = players[c]
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
-                exit()
-            if event.type == pg.K_ESCAPE:
-                pg.quit()
-                exit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_LEFT:
-                    c+=1
-                    if c>=len(players):
-                        c = 0
-                    #print(players[c])
-                    
-                    # bomb_rect.center = (players[-1].player_rect[0]+140, player[-1].player_rect[1]+100) 
-                    # screen.blit(bomb_img, bomb_rect)
-                    # players[d].hasBomb = True
+                        print(c,"RIGHT")
 
-                    #print(c,"LEFT")
-                    print("Left")
-                elif event.key == pg.K_RIGHT:
-                    c-=1
-                    if c <= -len(players):
-                        c = 0
-                    # print(players[c])
-                    # initial.hasBomb = False
-                    # d = parse_data(send_data(c))
-                    # bomb_rect.center = (players[-1].player_rect[0]+140, player[-1].player_rect[1]+100) 
-                    # screen.blit(bomb_img, bomb_rect)
-                    
-                    print(c,"RIGHT")
-                    # print("Right")
-                # elif event.key == pg.K_UP:
-                #     print("Up")
-                # elif event.key == pg.K_DOWN:
-                #     print("Down")
-                
 
 
         initial.hasBomb = False
