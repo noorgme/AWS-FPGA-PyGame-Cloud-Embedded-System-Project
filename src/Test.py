@@ -1,44 +1,12 @@
 import pygame as pg
 from enum import Enum
 from sys import exit
-from net_thread import Network
-import threading
-import time
+from network import Network
 import os
-from nios import NiosConnector
-# from ser_thread import get_connection
-
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
-os.chdir(os.path.join(proj_folder,"include"))
-
-
-#net = Network()
-controller = NiosConnector()
-user_count = 1
-user_count_loop = True
-def get_users_count():
-    global user_count
-    global user_count_loop
-    while user_count_loop:
-        net.get_connection()
-        data = net.receive_data()
-
-        try:
-            if data:
-                user_count = data[0]
-            print(f"Running... user count: {user_count}")    
-        except: pass
-        time.sleep(3)
-
-user_count_thread = threading.Thread(target=get_users_count)
-user_count_thread.daemon = True  # allow the program to exit if this thread is still running
-user_count_thread.start()
-
-    
-
-
+os.chdir(proj_folder+"\include")
 
 
 #define game states
@@ -69,10 +37,6 @@ class GameStateManager:
         elif self.current_state == GameState.MAINGAME:
             maingame()
 
-
-
-
-
 #Define player class
 class Player:
     def __init__(self, name, character, hasBomb, isAlive, playernum):
@@ -81,7 +45,7 @@ class Player:
         self.hasBomb = hasBomb
         self.isAlive = isAlive
         self.playernum = playernum
-        self.img = pg.image.load(os.path.join("img",character+".png")).convert_alpha()
+        self.img = pg.image.load("img/"+character+".png").convert_alpha()
         if playernum == 1:
             playerpos = (screenWidth//2, screenHeight//2+200)
         if playernum == 2:
@@ -95,9 +59,6 @@ class Player:
         print ("Bomb thrown to " + str(Player.playernum))
         self.hasBomb = False
         Player.hasBomb = True
-
-#Define Screen Functions
-
 
 def titlescreen():
 
@@ -132,7 +93,6 @@ def titlescreen():
         screen.blit(framerate, framerect)
 
         pg.display.update()
-
 def loginscreen():
     hoverColourUser ="white" 
     hoverColourPW = "white"
@@ -169,7 +129,6 @@ def loginscreen():
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
-        
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -265,7 +224,6 @@ def loginscreen():
 
         pg.display.flip()
     # To-DO, code for loginscreen
-
 def playerconnect():
     waiting_msg = font1.render('Waiting for players to connect...', True, black)
     start_msg = font1.render('Start game', True, black)
@@ -273,7 +231,7 @@ def playerconnect():
     start_msg_rect.center = ((screenWidth / 2 - start_msg.get_width() / 2), (screenHeight - 45))
     
     
-    de10 = pg.image.load(os.path.join("img","de10.png")).convert_alpha()
+    de10 = pg.image.load("img/de10.png").convert_alpha()
     de10 = pg.transform.scale(de10, (300, 150))
     de10_trans = de10.copy()
     de10_trans.set_alpha(120)
@@ -308,22 +266,12 @@ def playerconnect():
 
     pg.display.flip()
     
-
-
-    # b = net.get_connection()
-    # a = net.receive_data()
-    #print("COnn" + str(a))
-    
     while True:
-      
         screen.fill(light_grey)
         clock.tick(60)
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
-        #user_count_thread
-        # if user_count != "":
-        #     print(user_count)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -331,7 +279,6 @@ def playerconnect():
                 exit()
             elif event.type == pg.MOUSEBUTTONUP:
                 if (start_msg_rect.collidepoint(pg.mouse.get_pos())):
-                    user_count_loop = False
                     game_state_manager.change_state(GameState.CHARACTERSELECT)
                     game_state_manager.run_state()
                 
@@ -342,12 +289,7 @@ def playerconnect():
         screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
 
         # Draw connected message
-        
-        #print("Connection:" + str(a))
-
-        # print(user_count)
-        # a = net.receive_data()
-        connected_msg = font1.render(f'Players Connected (3-6): {user_count}', True, black)
+        connected_msg = font1.render('Players Connected (3-6): '+str(numPlayers), True, black)
         screen.blit(connected_msg, (squares[3][0] - 60, 50))
 
         # Draw waiting message and start button
@@ -371,26 +313,7 @@ def playerconnect():
         #blit framerate
         screen.blit(framerate, framerect)
         pg.display.flip()
-        #b = net.get_connection()
 
-        # a = net.receive_data()
-        # try:
-      # except:
-        #     pass  #     a = net.receive_data()
-        
-
-# def characterselect():
-   
-#     pg.display.flip()
-
-#     while True:
-#         for event in pg.event.get():
-#             if event.type == pg.QUIT:
-#                 pg.quit()
-#                 exit()
-
-#         screen.fill(light_grey)
-#         pg.display.flip()
 def characterselect():
     #  #load character images
     # characters = ["sarim", "bouganis", "naylor"]
@@ -401,13 +324,9 @@ def characterselect():
     # player2 = pg.image.load("img/sarim.png").convert_alpha()
     # player3 = pg.image.load("img/sarim.png").convert_alpha()
     # players = [player1, player2, player3]
-
-
-    
-
-    characters_1 = pg.image.load(os.path.join("img","sarim.png")).convert_alpha()
-    characters_2 = pg.image.load(os.path.join("img","bouganis.png")).convert_alpha()
-    characters_3 = pg.image.load(os.path.join("img","naylor.png")).convert_alpha()
+    characters_1 = pg.image.load("img/sarim.png").convert_alpha()
+    characters_2 = pg.image.load("img/bouganis.png").convert_alpha()
+    characters_3 = pg.image.load("img/naylor.png").convert_alpha()
 
     characters_1 = pg.transform.scale(characters_1, (300, 150))
     characters_1_trans = characters_1.copy()
@@ -612,9 +531,9 @@ def maingame():
 
 
         initial.hasBomb = False
-        # d = parse_data(send_data(c))
-        # print(send_data(c))
-        players[c].hasBomb = True
+       # d = parse_data(send_data(c))
+       # print(send_data(c))
+        #players[d].hasBomb = True
 
         screen.fill("orange")
         screen.blit(player1.img, player1.player_rect)
@@ -637,6 +556,11 @@ def maingame():
             
         pg.display.update()
         #fpsclock.tick(fps)
+
+
+
+
+
 
 
 
