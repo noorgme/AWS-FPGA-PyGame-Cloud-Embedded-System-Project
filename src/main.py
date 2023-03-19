@@ -534,20 +534,8 @@ whoSelecting = 0
 selected_char = []
 
 def characterselect():
-    #  #load character images
-    # characters = ["sarim", "bouganis", "naylor"]
-    # player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
-    # player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
-    # player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
-    # player1 = pg.image.load("img/sarim.png").convert_alpha()
-    # player2 = pg.image.load("img/sarim.png").convert_alpha()
-    # player3 = pg.image.load("img/sarim.png").convert_alpha()
-    # players = [player1, player2, player3]
 
-    
     global play
-
-    
 
     characters_1 = pg.image.load("img/sarim.png").convert_alpha()
     characters_2 = pg.image.load("img/bouganis.png").convert_alpha()
@@ -555,26 +543,31 @@ def characterselect():
 
     characters_1 = pg.transform.scale(characters_1, (300, 150))
     characters_1_trans = characters_1.copy()
-    characters_1_trans.set_alpha(240)#Pass 0 for invisible and 255 for fully opaque.
-    characters_1rect = characters_1.get_rect(center=((screenWidth // 3)-250,(screenHeight // 3)-70))
+    characters_1_trans.set_alpha(240)  # Pass 0 for invisible and 255 for fully opaque.
+    characters_1rect = characters_1.get_rect(
+        center=((screenWidth // 3) - 250, (screenHeight // 3) - 70)
+    )
 
     characters_2 = pg.transform.scale(characters_2, (300, 150))
     characters_2_trans = characters_2.copy()
     characters_2_trans.set_alpha(240)
-    characters_2rect = characters_2.get_rect(center=((screenWidth // 2), (screenHeight // 3)-70))
+    characters_2rect = characters_2.get_rect(
+        center=((screenWidth // 2), (screenHeight // 3) - 70)
+    )
 
     characters_3 = pg.transform.scale(characters_3, (300, 150))
     characters_3_trans = characters_3.copy()
     characters_3_trans.set_alpha(240)
-    characters_3rect = characters_3.get_rect(center=((screenWidth // 1.5)+250,(screenHeight // 3)-70))
-    
-    waiting_msg1 = font1.render("Character Select", True, black)
-    waiting_msg1rect =  waiting_msg1.get_rect(center= ((screenWidth // 2) , (screenHeight //3) -200))        
+    characters_3rect = characters_3.get_rect(
+        center=((screenWidth // 1.5) + 250, (screenHeight // 3) - 70)
+    )
 
-    # global success_msg
-    # global success_msgrect
-    
-    charsSelected=0
+    waiting_msg1 = font1.render("Character Select", True, black)
+    waiting_msg1rect = waiting_msg1.get_rect(
+        center=((screenWidth // 2), (screenHeight // 3) - 200)
+    )
+
+    charsSelected = 0
     global whoSelecting
     pg.display.flip()
     global hostID, selected_char
@@ -583,13 +576,7 @@ def characterselect():
     hostID = host_player.playernum
     get_players_loop = True
 
-  
-
-    # try:
-    #     play = net.get_usr().split(",")
-    # except:
-    #     play = net.get_usr()
-    #     numPlayers = 1
+ 
     print("getting users: ")
     play = net.get_usr()
     numPlayers = 1
@@ -597,18 +584,18 @@ def characterselect():
     if "," in play:
         play = play.split(",")
         numPlayers = len(play)
-    else: play = [play]
-    
+    else:
+        play = [play]
+
     global whoSelecting
 
     # whoSelecting = 0
 
-    print("jnj ",play)
-    
+    print("jnj ", play)
+
     print("User ID:", player_id)
     print("sad:", numPlayers)
 
-  
     # time.sleep(0.5)
     print("Kul Khara")
     try:
@@ -619,145 +606,122 @@ def characterselect():
     try:
         whoSelecting = net.char_select()
     except:
-        whoSelecting = 0
-    
-    
-    
-
-    
-
+        pass
 
     # selected_char = []
 
     while True:
         # print("Starting Lopp")
 
-        
         screen.fill(light_grey)
         screen.blit(characters_1_trans, characters_1rect)
         screen.blit(characters_2_trans, characters_2rect)
         screen.blit(characters_3_trans, characters_3rect)
         screen.blit(waiting_msg1, waiting_msg1rect)
-        pg.display.flip()
+
         # print("Char: ", charsSelected , " Num: ", numPlayers)
         while whoSelecting < numPlayers:
             # print("Running")
-            print("selected_char: ",selected_char)
+            print("selected_char: ", selected_char)
             screen.fill(light_grey)
             screen.blit(characters_1_trans, characters_1rect)
             screen.blit(characters_2_trans, characters_2rect)
             screen.blit(characters_3_trans, characters_3rect)
             screen.blit(waiting_msg1, waiting_msg1rect)
-            #config and blit whos turn it is message
+            # config and blit whos turn it is message
             # print(play[whoSelecting])
-            Plays_msg = font1.render(play[whoSelecting],' please connect to a character', True, black)
-            Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150))
-            #screen.blit(Plays_msg,Plays_msgrect)
             try:
                 whoSelecting = net.char_select()
                 selected_char = net.recieve_char()
             except:
-                    pass
-
-            
+                whoSelecting = 0
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     exit()
-                if whoSelecting != player_id:#i am not selecting
-
-                    # if ["""(NEW whoSelecting value from DB) != whoSelecting (current whoSelecting value)"""]: #TO-DO
-                    #     #TO-DO ANOTHER PLAYER HAS SELECTED! APPEND WHO THEY SELECTED IN A SELECTED CHARACTERS ARRAY, THEN UPDATE whoSelected variable
-                        
-                    #     success_msg = font1.render(play[whoSelecting]+' has chosen a' + """selectedCharactersArray[-1]""", True, black) #TO-DO: SELECTED CHARACTER
-                    # else:
-
-                    success_msg = font1.render(play[whoSelecting],' is choosing a character', True, black)
-                    #GET WHAT CHARACTERSS SELECTED FROM DB
-                    
-                    success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-
-                    
-                    screen.blit(success_msg,success_msgrect)
-
-                    # try:
-                    #     selected_char = net.recieve_char()
-                    # except:
-                    #     pass
-                    
-
+                if whoSelecting != player_id:  # i am not selecting
+                    success_msg = font1.render(
+                        "Waiting for other players to choose a character", True, black
+                    )
+                    success_msgrect = success_msg.get_rect(
+                        center=((screenWidth // 2), (screenHeight // 2) + 150)
+                    )
                 else:
-                    success_msg = font1.render('Please choose a character', True, black)#my turn to select character
-
-                    success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                    screen.blit(success_msg,success_msgrect)
-
-                    if (event.type == pg.MOUSEBUTTONUP): 
-                        
-
-                        if characters_1rect.collidepoint(pg.mouse.get_pos()): 
-                            if "sarim" not in selected_char: # TO-DO: CHECK IF CHARACTER IS ALREADY IN SELECTED CHARACTERS ARRAY
+                    success_msg = font1.render(
+                        "Please choose a character", True, black
+                    )  # my turn to select character
+                    success_msgrect = success_msg.get_rect(
+                        center=((screenWidth // 2), (screenHeight // 2) + 150)
+                    )
+                    if event.type == pg.MOUSEBUTTONUP:
+                        if characters_1rect.collidepoint(pg.mouse.get_pos()):
+                            if "sarim" not in selected_char:
                                 host_player.character = "sarim"
-                                success_msg = font1.render(play[whoSelecting],' selected Prof Baig', True, black)
                                 charsSelected += 1
                                 try:
-                                    selected_char = net.recieve_char(host_player.character)
+                                    selected_char = net.recieve_char(
+                                        host_player.character
+                                    )
                                 except:
                                     pass
-
-                                success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                                screen.blit(success_msg,success_msgrect)
-
                             else:
-                                success_msg = font1.render("Character selected, please select another one", True, black)
-                            ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
-                            success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                            screen.blit(success_msg,success_msgrect)    
-
-                        elif characters_2rect.collidepoint(pg.mouse.get_pos()): #TO-DO: AND CHARACTER NOT ALREADY SELECTED
+                                success_msg = font1.render(
+                                    "Character selected, please select another one",
+                                    True,
+                                    black,
+                                )
+                            success_msgrect = success_msg.get_rect(
+                                center=((screenWidth // 2), (screenHeight // 2) + 150)
+                            )
+                        elif characters_2rect.collidepoint(pg.mouse.get_pos()):
                             if "bouganis" not in selected_char:
                                 host_player.character = "bouganis"
-                                success_msg = font1.render(play[whoSelecting],'selected Prof Bouganis', True, black)
                                 charsSelected += 1
                                 try:
-                                    selected_char = net.recieve_char(host_player.character)
+                                    selected_char = net.recieve_char(
+                                        host_player.character
+                                    )
                                 except:
                                     pass
-
-                                success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                                screen.blit(success_msg,success_msgrect)
-                            
-                        
                             else:
-                                success_msg = font1.render("Character selected, please select another one", True, black)
-                            ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
-                            success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                            screen.blit(success_msg,success_msgrect) 
-                            
-                            ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
-                        elif characters_2rect.collidepoint(pg.mouse.get_pos()): #TO-DO: AND CHARACTER NOT ALREADY SELECTED
+                                success_msg = font1.render(
+                                    "Character selected, please select another one",
+                                    True,
+                                    black,
+                                )
+                                success_msgrect = success_msg.get_rect(
+                                    center=(
+                                        (screenWidth // 2),
+                                        (screenHeight // 2) + 150,
+                                    )
+                                )
+                            screen.blit(success_msg, success_msgrect)
+                        elif characters_3rect.collidepoint(pg.mouse.get_pos()):
                             if "naylor" not in selected_char:
                                 host_player.character = "naylor"
-                                success_msg = font1.render(play[whoSelecting],'selected Prof Naylor', True, black)
                                 charsSelected += 1
                                 try:
-                                    selected_char = net.recieve_char(host_player.character)
+                                    selected_char = net.recieve_char(
+                                        host_player.character
+                                    )
                                 except:
                                     pass
-
-                                success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                                screen.blit(success_msg,success_msgrect)
-
                             else:
-                                success_msg = font1.render("Character selected, please select another one", True, black)
-                            ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
-                            success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                            screen.blit(success_msg,success_msgrect) 
+                                success_msg = font1.render(
+                                    "Character selected, please select another one",
+                                    True,
+                                    black,
+                                )
                        
-                    
-                        ##TO DO: SEND CHARACTER SLECTED TO SERVER, DB SHOULD UPDATE THE PLAYERS CHARACTER AND SENDBACK INCREMENTED "WHOSELECTED" AND "WHICH CHARACTERS SELECTED"
-                
-                pg.display.flip()         
+                                success_msgrect = success_msg.get_rect(
+                                    center=(
+                                        (screenWidth // 2),
+                                        (screenHeight // 2) + 150,
+                                    )
+                                )
+                screen.blit(success_msg, success_msgrect)
+
+                pg.display.flip()
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -769,24 +733,20 @@ def characterselect():
                 game_state_manager.change_state(GameState.MAINGAME)
                 game_state_manager.run_state()
 
-
-        #blit startgame prompt
-        start_msg = font1.render('Press any key to start game', True, black)
+        # blit startgame prompt
+        start_msg = font1.render("Press any key to start the game", True, black)
         start_msg_rect = start_msg.get_rect()
-        start_msg_rect.center = ((screenWidth / 2 - start_msg.get_width() / 2), (screenHeight - 45))
-        screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, (screenHeight//2) +50))
+        start_msg_rect.center = (
+            (screenWidth / 2 - start_msg.get_width() / 2),
+            (screenHeight - 45),
+        )
+        screen.blit(
+            start_msg,
+            (screenWidth / 2 - start_msg.get_width() / 2, (screenHeight // 2) + 50),
+        )
 
-        
+        pg.display.update()
 
-        #draw button?
-        pg.draw.rect(screen, green, (screenWidth / 2 -190, (screenHeight //2) +40, 365, 50), border_radius=10)
-        
-        #screen.blit(Plays_msg,Plays_msgrect)
-        
-      
-      
- 
-        pg.display.flip()
 
 c = 0
 # net = Network()
