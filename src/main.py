@@ -4,7 +4,9 @@ from sys import exit
 from network import Network
 import os
 from nios import NiosConnector
-
+from net_thread import Network
+import threading
+import time
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
