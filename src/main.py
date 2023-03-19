@@ -125,7 +125,8 @@ class Player:
         Player.hasBomb = True
 #Define Screen Functions
 def titlescreen():
-    
+    bomb_surface = pg.image.load("img/background.png")
+    title_surface =  title_font.render("Boomtato", True, red)
     titleMsg1 = font1.render("Press any key to continue", True,white)
     titleMsg1rect = titleMsg1.get_rect()
     titleMsg1rect.center = ((screenWidth // 2) + 30, screenHeight //2 + 60)
@@ -140,9 +141,11 @@ def titlescreen():
             if event.type == pg.KEYDOWN:
                 game_state_manager.change_state(GameState.LOGINSCREEN)
                 game_state_manager.run_state()
-        screen.fill("grey")
-        #blit logo
-        screen.blit(titleLogo, (screenWidth // 2 - titleLogo.get_width() // 2, screenHeight // 2 - titleLogo.get_height() // 2))
+                
+        #screen.fill("grey")
+        #blit logo, now replace with background images
+        screen.blit(bomb_surface,(0,0))
+        screen.blit(title_surface, (screenWidth // 2 - title_surface.get_width() // 2, screenHeight // 2 - title_surface.get_height() // 2))
         #blit PressAnyKey
         screen.blit(titleMsg1, titleMsg1rect)
         #blit framerate
@@ -170,10 +173,13 @@ def username_thread(net, username, password):
 def loginscreen():
     hoverColourUser ="white" 
     hoverColourPW = "white"
+    
+    # Define background Images
+    login_background = pg.image.load("img/login_background.png")
     # Define labels
-    username_label = font1.render("Username:", True, black)
-    password_label = font1.render("Password:", True, black)
-    user_logged = font1.render("User already logged:", True, black)
+    username_label = font1.render("Username:", True, red)
+    password_label = font1.render("Password:", True, red)
+    user_logged = font1.render("User already logged:", True, red)
 
     # Define input boxes
     username_input_rect = pg.Rect((screenWidth // 2) - 100, screenHeight // 2 - 30, 200, 30)
@@ -187,13 +193,13 @@ def loginscreen():
     login_text_rect = login_text.get_rect(center=login_button_rect.center)
     # Define instructions
     instructions_text = "Enter your username and password to login"
-    instructions = font1.render(instructions_text, True, black)
+    instructions = font1.render(instructions_text, True, red)
     instructions_rect = instructions.get_rect(center=(screenWidth // 2, screenHeight // 2 - 80))
     # Set default values for username and password
     username = ""
     password = ""
-    usertext = font1.render(username, True, black)
-    passtext = font1.render(password, True, black)
+    usertext = font1.render(username, True, red)
+    passtext = font1.render(password, True, red)
     usernameSelected = False
     pwSelected = False
     global player_id, host_player
@@ -221,12 +227,12 @@ def loginscreen():
                     usernameSelected = True
                     pwSelected = False
                     hoverColourPW = white
-                    hoverColourUser = black
+                    hoverColourUser = red
                 elif (password_input_rect.collidepoint(pg.mouse.get_pos())):
                     pwSelected = True
                     usernameSelected = False
                     hoverColourUser = white
-                    hoverColourPW = black
+                    hoverColourPW = red
 
                 elif (login_button_rect.collidepoint(pg.mouse.get_pos()) and username != ""):
                     print("Login button pressed")
@@ -265,14 +271,14 @@ def loginscreen():
                     hoverColourPW = white
             elif event.type == pg.MOUSEMOTION:
                 if username_input_rect.collidepoint(pg.mouse.get_pos()) or usernameSelected: #if user hovered or selected 
-                    hoverColourUser = black
+                    hoverColourUser = red
                     if password_input_rect.collidepoint(pg.mouse.get_pos()) or pwSelected:
-                        hoverColourPW = black
+                        hoverColourPW = red
                     else:
                         hoverColourPW = white
             
                 elif password_input_rect.collidepoint(pg.mouse.get_pos()) or pwSelected:
-                    hoverColourPW = black
+                    hoverColourPW = red
                     if not usernameSelected:
                         hoverColourUser = white
                 else:
@@ -285,21 +291,22 @@ def loginscreen():
                     if event.unicode.isalnum():
                         if len(username) < 14:
                             username += event.unicode
-                            usertext = font1.render(username, True, black)
+                            usertext = font1.render(username, True, red)
                     elif event.key == pg.K_BACKSPACE:
                         username = username[:len(username)-1]
-                        usertext = font1.render(username, True, black)
+                        usertext = font1.render(username, True, red)
                 elif (pwSelected):
                     if event.unicode.isalnum():
                         if len(password) < 14:
                             password += event.unicode
-                            passtext = font1.render(password, True, black)
+                            passtext = font1.render(password, True, red)
                     elif event.key == pg.K_BACKSPACE:
                         password = password[:len(password)-1]
-                        passtext = font1.render(password, True, black)
+                        passtext = font1.render(password, True, red)
        
-        # Draw the background
-        screen.fill(light_grey)
+        # Draw the background, now replace with images
+        #screen.fill(light_grey)        
+        screen.blit(login_background,(0,0))
         # Draw the username and password labels
         screen.blit(username_label, (username_input_rect.left - 120, username_input_rect.centery - 8))
         screen.blit(password_label, (password_input_rect.left - 120, password_input_rect.centery - 8))
@@ -956,14 +963,17 @@ def maingame():
 
 
 pg.init()
+
 #Initialize game state manager and set state = TitleScreen
 game_state_manager = GameStateManager()
 game_state_manager.change_state(GameState.TITLESCREEN)
+
 #Setup display
 screenWidth = 1280
 screenHeight = 720
 screen = pg.display.set_mode((screenWidth, screenHeight))
-pg.display.set_caption("FoodGame")
+pg.display.set_caption("Boomtato")
+
 #Define Colours:
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -974,17 +984,19 @@ red = (255, 0, 0)
 
 
 #Set Fonts
-
-font1 = pg.font.Font(os.path.join("fonts","retro.ttf"), 20)
+font1 = pg.font.Font(r"fonts/retro.ttf", 20)
+title_font = pg.font.Font(r"fonts/SuperMario256.ttf",50)
 
 
 #Setup clock
 clock = pg.time.Clock()
 
 #Load Media
-titleLogo = pg.image.load(os.path.join("img","title.png")).convert_alpha()
+#titleLogo = pg.image.load(r"img/title.png").convert_alpha()
+#updated and not used
 
 
 def main():
     game_state_manager.run_state()
+
 main()
