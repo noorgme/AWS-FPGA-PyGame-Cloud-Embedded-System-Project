@@ -28,13 +28,17 @@ users = []
 
 selected_char = []
 
-char_select = 0
+char_select = 1
+ready_players = []
 
+hasBomb = 1
 
 def handle_client(clientsocket, addr):
+    global hasBomb
     global char_select
     global users
     global selected_char
+    global ready_players
     print('Got a connection from %s' % str(addr))
 
     # add the client socket to the list of clients
@@ -115,7 +119,7 @@ def handle_client(clientsocket, addr):
                     if response == "Success":
                         if user not in users:
                             users.append(user)
-                    player_id = users.index(user) #+1
+                    player_id = users.index(user)+1 #+1
                     response = response + ":" + str(player_id)
                     clientsocket.send(response.encode("utf-8"))
 
@@ -137,8 +141,19 @@ def handle_client(clientsocket, addr):
                 clientsocket.send(data.encode("utf-8"))
             # elif 
                     
-                    
-                
+            elif "imready" in data:
+                playerready = int(data[-1])
+                ready_players.append(playerready)
+            elif "whosReady" in data:
+                clientsocket.send(str(ready_players).encode("utf-8"))
+            elif "hasBombTell" in data:
+                data = data.split(":")
+                hasBomb = int(data[1])
+                print ("oh ok bomb is with " + str(hasBomb))
+            elif "hasBombAsk" in data:
+                print ("server: bomb is with "+str(hasBomb))
+                clientsocket.send(str(hasBomb).encode("utf-8"))
+
             else:
                 print('Empty message received from client')
 

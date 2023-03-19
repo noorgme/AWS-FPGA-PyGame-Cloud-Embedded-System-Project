@@ -3,7 +3,7 @@ import threading
 import sys
 import json
 import time
-
+import ast
 # create a socket object
 
 
@@ -112,7 +112,7 @@ class Network:
             reply = reply.split(":")
             reply = reply[1]
         except:
-            reply = "0"
+            reply = "1"
 
         return int(reply)
 
@@ -138,7 +138,35 @@ class Network:
         except:
               pass
         return b
-          
+    
+    def getReadyPlayers(self, type, playernum):
+        if type == "imready":
+              self.clientsocket.send(str.encode(type+str(playernum)))
+        elif type == "whosReady":
+            self.clientsocket.send(str.encode(type))
+            time.sleep(0.1)
+            try:
+                whosReady = ast.literal_eval(self.clientsocket.recv(2048).decode("utf-8"))
+            except:
+                pass
+            return whosReady
+    
+    def hasbomb(self, player):
+        if player != 99:   #tell server who has bomb
+            self.clientsocket.send(str.encode("hasBombTell: "+str(player)))
+            return None
+        else: #ask server who has bomb
+            self.clientsocket.send(str.encode("hasBombAsk"))
+            
+            time.sleep(0.1)
+            try:
+                
+                hasBomb = int(self.clientsocket.recv(2048).decode("utf-8"))
+            except:
+                print ("failed to communicate")
+            
+            return hasBomb
+
 
     # while True:
     #     # get user input
