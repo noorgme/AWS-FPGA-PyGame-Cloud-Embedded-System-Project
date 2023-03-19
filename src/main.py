@@ -186,10 +186,13 @@ def loginscreen():
     # Define labels
     username_label = font1.render("Username:", True, black)
     password_label = font1.render("Password:", True, black)
+    user_logged = font1.render("User already logged:", True, black)
 
     # Define input boxes
     username_input_rect = pg.Rect((screenWidth // 2) - 100, screenHeight // 2 - 30, 200, 30)
     password_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 30, 200, 30)
+    # user_logged_rect = user_logged.
+    user_logged_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 120, 200, 30)
 
     # Define login button
     login_button_rect = pg.Rect(screenWidth // 2 - 50, screenHeight // 2 + 80, 100, 30)
@@ -209,6 +212,8 @@ def loginscreen():
     usernameSelected = False
     pwSelected = False
     global player_id, host_player
+
+    user_logged_bool = False
     
     # Create a variable to store the login reply
     
@@ -219,7 +224,7 @@ def loginscreen():
 
     while True:
         clock.tick(60)
-        print("Login Screen")
+        # print("Login Screen")
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
@@ -252,6 +257,7 @@ def loginscreen():
 
                     # login_reply = login_reply_var.get()
                     if "Success" in login_reply:
+                        user_logged_bool = False
                         player_id = int(login_reply[-1])
                         host_player = Player(username,None, False, True, player_id)
                         if player_id == 1:
@@ -260,8 +266,13 @@ def loginscreen():
                         print("username: " + username + "password: " + password)
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
+                    if "User already exists" in login_reply:
+                        user_logged_bool = True
+                        
+                        print("User already exists")
 
-                    print(login_reply)
+
+                    # print(login_reply)
                     print("Player id is " + str(player_id))
                     # if pas == "Success": pass
                     # else: print("Incorrect password")
@@ -329,6 +340,9 @@ def loginscreen():
          # Draw the login button
         pg.draw.rect(screen, "lightblue", login_button_rect)
         screen.blit(login_text, login_text_rect)
+
+        if user_logged_bool:
+            screen.blit(user_logged, user_logged_rect)
 
         # Draw the instructions
         screen.blit(instructions, instructions_rect)

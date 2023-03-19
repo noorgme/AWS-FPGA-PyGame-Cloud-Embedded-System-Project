@@ -115,12 +115,16 @@ def handle_client(clientsocket, addr):
                     user =  decoded_data['username']
                     password = decoded_data['password']
                     #response = put_player(user, password)
-                    response = "Success"
-                    if response == "Success":
-                        if user not in users:
-                            users.append(user)
-                    player_id = users.index(user)+1 #+1
-                    response = response + ":" + str(player_id)
+                    if user in users:
+                        response = "User already exists"
+                    else:
+                        #response = put_player(user, password)
+                        response = "Success"
+                        if response == "Success":
+                            if user not in users:
+                                users.append(user)
+                        player_id = users.index(user)+1 #+1
+                        response = response + ":" + str(player_id)
                     clientsocket.send(response.encode("utf-8"))
 
 
