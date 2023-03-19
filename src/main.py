@@ -125,7 +125,7 @@ class Player:
         Player.hasBomb = True
 #Define Screen Functions
 def titlescreen():
-    bomb_surface = pg.image.load("img/background.png")
+    bomb_surface = pg.image.load(os.path.join("img","background.png"))
     title_surface =  title_font.render("Boomtato", True, red)
     titleMsg1 = font1.render("Press any key to continue", True,white)
     titleMsg1rect = titleMsg1.get_rect()
@@ -175,7 +175,7 @@ def loginscreen():
     hoverColourPW = "white"
     
     # Define background Images
-    login_background = pg.image.load("img/login_background.png")
+    login_background = pg.image.load(os.path.join("img","login_background.png"))
     # Define labels
     username_label = font1.render("Username:", True, red)
     password_label = font1.render("Password:", True, red)
@@ -733,7 +733,7 @@ def send_data(c):
 
 
 #     #load bomb
-#     bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+#     bomb_img = pg.image.load(os.path.join("img","bomb.png")).convert_alpha()
 #     bomb_img = pg.transform.scale(bomb_img, (70, 70))
 #     bomb_rect = bomb_img.get_rect()
 #     # fps=30
@@ -809,9 +809,9 @@ def maingame():
     playernumrect.center = (screenWidth-100, 50)
 
 
-    player1img = pg.image.load("img/"+str(selected_char[0])+".png").convert_alpha()
-    player2img = pg.image.load("img/"+str(selected_char[1])+".png").convert_alpha()
-    player3img = pg.image.load("img/"+str(selected_char[2])+".png").convert_alpha()
+    player1img = pg.image.load(os.path.join("img",str(selected_char[0])+".png")).convert_alpha()
+    player2img = pg.image.load(os.path.join("img",str(selected_char[1])+".png")).convert_alpha()
+    player3img = pg.image.load(os.path.join("img",str(selected_char[2])+".png")).convert_alpha()
     player1img = pg.transform.scale(player1img, (playerimgWidth, playerimgHeight))
     player2img = pg.transform.scale(player2img, (playerimgWidth, playerimgHeight))
     player3img = pg.transform.scale(player3img, (playerimgWidth, playerimgHeight))
@@ -822,7 +822,7 @@ def maingame():
     player2imgrect.center = ((screenWidth // 2)-300, (screenHeight // 3))
     player3imgrect.center = ((screenWidth // 2)+300, (screenHeight // 3))
     #load bomb
-    bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+    bomb_img = pg.image.load(os.path.join("img","bomb.png")).convert_alpha()
     bomb_img = pg.transform.scale(bomb_img, (110, 110))
     bomb_rect = bomb_img.get_rect()
 
@@ -991,15 +991,15 @@ red = (255, 0, 0)
 
 
 #Set Fonts
-font1 = pg.font.Font(r"fonts/retro.ttf", 20)
-title_font = pg.font.Font(r"fonts/SuperMario256.ttf",50)
+font1 = pg.font.Font(os.path.join("fonts","retro.ttf"), 20)
+title_font = pg.font.Font(os.path.join("fonts","SuperMario256.ttf"),50)
 
 
 #Setup clock
 clock = pg.time.Clock()
 
 #Load Media
-#titleLogo = pg.image.load(r"img/title.png").convert_alpha()
+#titleLogo = pg.image.load(os.path.join("img","title.png")).convert_alpha()
 #updated and not used
 
 
