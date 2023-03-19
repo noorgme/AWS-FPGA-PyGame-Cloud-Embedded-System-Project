@@ -891,6 +891,10 @@ def maingame():
     bombDuration = 60
 
 
+
+
+   
+    
     
     # fps=30
     clock = pg.time.Clock()
@@ -898,15 +902,21 @@ def maingame():
     screen.blit(player1img, player1imgrect)
     screen.blit(player2img, player2imgrect)
     screen.blit(player3img, player3imgrect)
+
     pg.display.update()
 
     while True:
-
+         #Display player with bomb
+        playerwithbomtext = font1.render("Player "+str(hasBomb) + " Bomb!", True, (255, 255, 255))
+        playerwithbomrect = playerwithbomtext.get_rect()
+        playerwithbomrect.bottomleft = (100, screenHeight - 50)
+        
         screen.fill("orange")
         screen.blit(player1img, player1imgrect)
         screen.blit(player2img, player2imgrect)
         screen.blit(player3img, player3imgrect)
         screen.blit(playernumtext, playernumrect)
+        screen.blit(playerwithbomtext, playerwithbomrect)
         if hasBomb == 1:
             bomb_rect.center = (player1imgrect[0]-40, player1imgrect[1]-40)
         elif hasBomb == 2:
@@ -920,7 +930,10 @@ def maingame():
         if remaining_time > 0:
             timertext = font1.render(str(remaining_time), True, "red")
         else:
-            timertext = font1.render(play[hasBomb-1] + " is the loser!", True, "red")
+            if host_player.playernum == hasBomb:
+                timertext = font1.render("BAHAHAHAHAHHAH! YOU LOST!", True, "red")
+            else:
+                timertext = font1.render("Player " +str(hasBomb) +": " + play[hasBomb-1] + " is the loser!", True, "red")
         timertextrect = timertext.get_rect()
         timertextrect.center = (screenWidth//2, screenHeight//2)
         screen.blit(timertext, timertextrect)
