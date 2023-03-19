@@ -531,7 +531,7 @@ whoSelecting = 0
 # play = ""
 
 
-
+selected_char = []
 
 def characterselect():
     #  #load character images
@@ -577,7 +577,7 @@ def characterselect():
     charsSelected=0
     global whoSelecting
     pg.display.flip()
-    global hostID
+    global hostID, selected_char
     global get_players_loop, user_count_loop
     user_count_loop = False
     hostID = host_player.playernum
@@ -630,7 +630,7 @@ def characterselect():
     # selected_char = []
 
     while True:
-        print("Starting Lopp")
+        # print("Starting Lopp")
 
         
         screen.fill(light_grey)
@@ -639,18 +639,25 @@ def characterselect():
         screen.blit(characters_3_trans, characters_3rect)
         screen.blit(waiting_msg1, waiting_msg1rect)
         pg.display.flip()
-        print("Char: ", charsSelected , " Num: ", numPlayers)
-        while charsSelected < numPlayers:
-            print("Running")
+        # print("Char: ", charsSelected , " Num: ", numPlayers)
+        while whoSelecting < numPlayers:
+            # print("Running")
+            print("selected_char: ",selected_char)
             screen.fill(light_grey)
             screen.blit(characters_1_trans, characters_1rect)
             screen.blit(characters_2_trans, characters_2rect)
             screen.blit(characters_3_trans, characters_3rect)
             screen.blit(waiting_msg1, waiting_msg1rect)
             #config and blit whos turn it is message
-            Plays_msg = font1.render(play[whoSelecting]+' please connect to a character', True, black)
+            # print(play[whoSelecting])
+            Plays_msg = font1.render(play[whoSelecting],' please connect to a character', True, black)
             Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150))
             #screen.blit(Plays_msg,Plays_msgrect)
+            try:
+                whoSelecting = net.char_select()
+                selected_char = net.recieve_char()
+            except:
+                    pass
 
             
             for event in pg.event.get():
@@ -665,17 +672,19 @@ def characterselect():
                     #     success_msg = font1.render(play[whoSelecting]+' has chosen a' + """selectedCharactersArray[-1]""", True, black) #TO-DO: SELECTED CHARACTER
                     # else:
 
-                    success_msg = font1.render(play[whoSelecting]+' is choosing a character', True, black)
+                    success_msg = font1.render(play[whoSelecting],' is choosing a character', True, black)
                     #GET WHAT CHARACTERSS SELECTED FROM DB
                     
                     success_msgrect = success_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
 
                     
                     screen.blit(success_msg,success_msgrect)
-                    try:
-                        whoSelecting = net.char_select()
-                    except:
-                        pass
+
+                    # try:
+                    #     selected_char = net.recieve_char()
+                    # except:
+                    #     pass
+                    
 
                 else:
                     success_msg = font1.render('Please choose a character', True, black)#my turn to select character
@@ -689,7 +698,7 @@ def characterselect():
                         if characters_1rect.collidepoint(pg.mouse.get_pos()): 
                             if "sarim" not in selected_char: # TO-DO: CHECK IF CHARACTER IS ALREADY IN SELECTED CHARACTERS ARRAY
                                 host_player.character = "sarim"
-                                success_msg = font1.render(play[whoSelecting]+' selected Prof Baig', True, black)
+                                success_msg = font1.render(play[whoSelecting],' selected Prof Baig', True, black)
                                 charsSelected += 1
                                 try:
                                     selected_char = net.recieve_char(host_player.character)
@@ -708,7 +717,7 @@ def characterselect():
                         elif characters_2rect.collidepoint(pg.mouse.get_pos()): #TO-DO: AND CHARACTER NOT ALREADY SELECTED
                             if "bouganis" not in selected_char:
                                 host_player.character = "bouganis"
-                                success_msg = font1.render(play[whoSelecting]+'selected Prof Bouganis', True, black)
+                                success_msg = font1.render(play[whoSelecting],'selected Prof Bouganis', True, black)
                                 charsSelected += 1
                                 try:
                                     selected_char = net.recieve_char(host_player.character)
@@ -729,7 +738,7 @@ def characterselect():
                         elif characters_2rect.collidepoint(pg.mouse.get_pos()): #TO-DO: AND CHARACTER NOT ALREADY SELECTED
                             if "naylor" not in selected_char:
                                 host_player.character = "naylor"
-                                success_msg = font1.render(play[whoSelecting]+'selected Prof Naylor', True, black)
+                                success_msg = font1.render(play[whoSelecting],'selected Prof Naylor', True, black)
                                 charsSelected += 1
                                 try:
                                     selected_char = net.recieve_char(host_player.character)
@@ -801,11 +810,103 @@ c = 0
 
 
 
+# def maingame():
+#     global host_player
+#     global play, c
+#     pg.display.flip()
+#     #load character images
+
+    
+
+
+#     #load bomb
+#     bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+#     bomb_img = pg.transform.scale(bomb_img, (70, 70))
+#     bomb_rect = bomb_img.get_rect()
+#     # fps=30
+#     clock = pg.time.Clock()
+#     hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the starT
+        
+#     while True:
+#             clock.tick(60)
+#             initial = players[c]
+            
+#             for event in pg.event.get():
+#                 if event.type == pg.QUIT:
+#                     pg.quit()
+#                     exit()
+#                 if event.type == pg.K_ESCAPE:
+#                     pg.quit()
+#                     exit()
+#                 if event.type == pg.KEYDOWN:
+#                     if event.key == pg.K_LEFT:
+#                         c+=1
+#                         if c>=len(players):
+#                             c = 0
+
+#                         print("Left")
+#                     elif event.key == pg.K_RIGHT:
+
+#                         print(c,"RIGHT")
+
+#             if hasBomb == host_player.playernum:
+#                 pass #I HAVE THE MFCKIN BOMB
+
+#             initial.hasBomb = False
+#             # d = parse_data(send_data(c))
+#             # print(send_data(c))
+#             players[c].hasBomb = True
+
+#             screen.fill("orange")
+#             screen.blit(player1.img, player1.player_rect)
+#             screen.blit(player2.img, player2.player_rect)
+#             screen.blit(player3.img, player3.player_rect)
+
+            
+            
+
+
+#             for player in players:
+#                 if (player.hasBomb):
+#                     #initial = player
+                    
+#                     bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
+#                     screen.blit(bomb_img, bomb_rect)
+        
+            
+#             #pg.display.flip()
+                
+#             pg.display.update()
+#             #fpsclock.tick(fps)
+
+
+
+
 def maingame():
     global host_player
-    global play, c
+    global play, selected_char
     pg.display.flip()
+
     #load character images
+    playerimgWidth = 200
+    playerimgHeight = 200
+    player1img = pg.image.load("img/"+str(selected_char[0])+".png").convert_alpha()
+    player2img = pg.image.load("img/"+str(selected_char[1])+".png").convert_alpha()
+    player3img = pg.image.load("img/"+str(selected_char[2])+".png").convert_alpha()
+    player1img = pg.transform.scale(player1img, (playerimgWidth, playerimgHeight))
+    player2img = pg.transform.scale(player2img, (playerimgWidth, playerimgHeight))
+    player3img = pg.transform.scale(player3img, (playerimgWidth, playerimgHeight))
+    player1imgrect = player1img.get_rect()
+    player2imgrect = player2img.get_rect()
+    player3imgrect = player3img.get_rect()
+    player1imgrect.center = (0, 600)
+    player2imgrect.center = (-200, 400)
+    player3imgrect.center = (200, 400 )
+
+    screen.blit(player1img, player1imgrect)
+    screen.blit(player1img, player1imgrect)
+    screen.blit(player1img, player1imgrect)
+    
 
     
 
@@ -816,59 +917,75 @@ def maingame():
     bomb_rect = bomb_img.get_rect()
     # fps=30
     clock = pg.time.Clock()
-    hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the starT
-        
+    hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the start
+    bombDuration = 60
+    timerstart = pg.time.get_ticks()
+
+    print("players:", selected_char)
+
     while True:
-            clock.tick(60)
-            initial = players[c]
-            
+        screen.fill("orange")
+        if hasBomb == 1:
+            bomb_rect.center = (player1imgrect[0]+140, player1imgrect[1]+100)
+        elif hasBomb == 2:
+            bomb_rect.center = (player2imgrect[0]+140, player2imgrect[1]+100)
+        elif hasBomb == 3:
+            bomb_rect.center = (player3imgrect[0]+140, player3imgrect[1]+100)
+        screen.blit(bomb_img, bomb_rect)
+        clock.tick(60)
+        elapsedtime = (pg.time.get_ticks() - timerstart) // 1000
+        remaining_time = bombDuration - elapsedtime
+        timertext = font1.render(str(remaining_time), True, "red")
+        timertextrect = timertext.get_rect()
+        timertextrect.center = (screenWidth//2, screenHeight//2)
+        screen.blit(timertext, timertextrect)
+        if remaining_time == 0:
+            print(play[hasBomb] + "is the loser!")
+
+        if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
             for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    exit()
-                if event.type == pg.K_ESCAPE:
-                    pg.quit()
-                    exit()
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
-                        c+=1
-                        if c>=len(players):
-                            c = 0
-
-                        print("Left")
+                        if host_player.playernum == 1:
+                            hasBomb = 2 # passed to player 2
+                            #to-do: pass hasBomb to server so server knows player 2 now has bomb
+                        elif host_player.playernum == 2:
+                            hasBomb = 3
+                            #to-do pass hasBomb to server
+                        else:
+                            hasBomb = 1
                     elif event.key == pg.K_RIGHT:
+                        if host_player.playernum == 1:
+                            hasBomb = 3
+                            #todo: pass to server
+                        elif host_player.playernum == 2:
+                            hasBomb = 1
+                            #todo: pass to server
+                        else:
+                            hasBomb = 2
+                            #todo: pass to server
+        else: #i dont have bomb
+            while hasBomb != host_player.playernum: #while i dont have bomb, check who has bomb
+                #todo: function to get hasBomb from server
+                trash = 1
+                #i.e. hasBomb = server.get()
 
-                        print(c,"RIGHT")
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
 
-            if hasBomb == host_player.playernum:
-                pass #I HAVE THE MFCKIN BOMB
-
-            initial.hasBomb = False
-            # d = parse_data(send_data(c))
-            # print(send_data(c))
-            players[c].hasBomb = True
-
-            screen.fill("orange")
-            screen.blit(player1.img, player1.player_rect)
-            screen.blit(player2.img, player2.player_rect)
-            screen.blit(player3.img, player3.player_rect)
-
-            
-            
-
-
-            for player in players:
-                if (player.hasBomb):
-                    #initial = player
-                    
-                    bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
-                    screen.blit(bomb_img, bomb_rect)
         
+
+
+            
+
             
             #pg.display.flip()
                 
-            pg.display.update()
+        pg.display.update()
             #fpsclock.tick(fps)
+
 
 
 

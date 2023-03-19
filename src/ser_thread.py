@@ -76,16 +76,20 @@ def handle_client(clientsocket, addr):
                 # print(d, "len ", len(d))
                 if data[-1] == ":":
                     print("sending empty")
-                    e = "Character_Selected:"
+                    # ef = ','.join(selected_char)
+                    # e = "Character_Selected:" + ef
+                    # print("sending empty",e)
+                    # e = "Character_Selected:" 
 
                 else:
                     d = data.split(":")
                     print("sending ", d[1])
                     selected_char.append(d[1])
-                    ef = ','.join(selected_char)
-                    e = "Character_Selected:" + ef
                     char_select +=1
-                    print("char_select ", char_select)
+                ef = ','.join(selected_char)
+                e = "Character_Selected:" + ef
+                
+                print("char_select ", selected_char)
                 
                 clientsocket.send(e.encode("utf-8"))
                 

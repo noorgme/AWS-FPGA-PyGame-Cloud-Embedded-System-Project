@@ -6,6 +6,10 @@ import time
 
 # create a socket object
 
+
+
+char_selected = []
+
 class Network:
     def __init__(self):
           self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,7 +106,15 @@ class Network:
 
     def char_select(self):
         self.clientsocket.send(str.encode("char_select:"))
-        return 0
+        time.sleep(0.1)
+        reply = self.clientsocket.recv(2048).decode("utf-8")
+        try:
+            reply = reply.split(":")
+            reply = reply[1]
+        except:
+            reply = "0"
+
+        return int(reply)
 
     def recieve_char(self, char=None):
         if char == None:
@@ -114,6 +126,7 @@ class Network:
         b = ''
         try:
             a = self.clientsocket.recv(2048).decode("utf-8")
+            print("recieved: ",a)
             a = a.split(":")
             if len(a) > 1:
                 b = a[1]
