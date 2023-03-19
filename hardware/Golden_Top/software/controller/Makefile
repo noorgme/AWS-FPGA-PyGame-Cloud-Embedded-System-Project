@@ -49,6 +49,7 @@ ALT_LDFLAGS :=
 UNAME = $(shell uname -r | tr A-Z a-z)
 ifeq ($(findstring microsoft,$(UNAME)),microsoft)
 	WINDOWS_EXE = .exe
+	
 endif
 
 eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
@@ -133,7 +134,7 @@ APP_LIBRARY_DIRS :=
 APP_LIBRARY_NAMES :=
 
 # Pre- and post- processor settings.
-BUILD_PRE_PROCESS :=
+BUILD_PRE_PROCESS := touch $(ELF).srec
 BUILD_POST_PROCESS :=
 
 QUARTUS_PROJECT_DIR := ../../

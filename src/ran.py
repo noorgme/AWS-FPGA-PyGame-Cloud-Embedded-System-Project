@@ -22,7 +22,7 @@ def update_user_count():
             user_count = data
         print(f"Running... user count: {user_count}")
         # Wait for 1 second before sending the next request
-        time.sleep(1)
+        time.sleep(2)
 
 # Start the thread to update the user count
 user_count_thread = threading.Thread(target=update_user_count)

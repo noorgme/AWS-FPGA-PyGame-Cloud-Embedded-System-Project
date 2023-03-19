@@ -4,12 +4,78 @@ from sys import exit
 from network import Network
 import os
 from nios import NiosConnector
-
+from net_thread import Network
+import threading
+import time
 
 #Set working directory
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
+
 os.chdir(os.path.join(proj_folder,"include"))
 #controller = NiosConnector()
+
+net = Network()
+user_count = 1
+user_count_loop = True
+
+# net.get_connection()
+# user_id = net.receive_data()
+
+player_id = 0
+host_player = 0
+players = []
+get_players_loop = False
+
+
+def get_users_count():
+    global user_count
+    global user_count_loop
+    global get_players_loop
+    global players
+    if user_count_loop:
+        while user_count_loop:
+            net.get_connection()
+            data = net.receive_data()
+            print("Run usr count")
+
+            try:
+                if "user_count" in data:
+                    user_count = data[-1]
+                print(f"Running... user count: {user_count}")    
+            except: pass
+        
+            time.sleep(3)
+    elif get_players_loop:
+        while get_players_loop:
+            net.get_usd()
+            data = net.receive_data()
+            print("Get Players")
+
+            try:
+                if data:
+                    players = data
+                print(f"Running... player: {players}")    
+            except: pass
+        
+            time.sleep(3)
+
+
+# user_count_thread = threading.Thread(target=get_users_count)
+# user_count_thread.daemon = True  # allow the program to exit if this thread is still running
+# user_count_thread.start()
+
+
+# def get_no_users():
+#     global players
+#     global get_players_loop
+#     while get_players_loop:
+#         players = net.get_usr()
+#         time.sleep(3)
+
+
+
+
+    
 
 def quitGame():
     try:
@@ -49,20 +115,10 @@ class GameStateManager:
 class Player:
     def __init__(self, name, character, hasBomb, isAlive, playernum):
         self.name = name
-        self.character = character
+        self.character = None
         self.hasBomb = hasBomb
         self.isAlive = isAlive
         self.playernum = playernum
-        self.img = pg.image.load(os.path.join("img",character+".png")).convert_alpha()
-        if playernum == 1:
-            playerpos = (screenWidth//2, screenHeight//2+200)
-        if playernum == 2:
-            playerpos = (screenWidth//2 - 200, screenHeight//2-100)
-        if playernum == 3:
-            playerpos = (screenWidth//2+200, screenHeight//2-100)
-        self.img = pg.transform.scale(self.img, (150, 150))
-        self.player_rect = self.img.get_rect(center = playerpos)
-    
     def throwBomb(self, Player):
         print ("Bomb thrown to " + str(Player.playernum))
         self.hasBomb = False
@@ -92,15 +148,39 @@ def titlescreen():
         #blit framerate
         screen.blit(framerate, framerect)
         pg.display.update()
+
+
+login_reply_var = threading.Event()
+
+
+def username_thread(net, username, password):
+    login_reply = net.send_pass(username, password)
+    # Store the login reply in a shared variable
+    login_reply_var.set(login_reply)
+
+
+# network_thread = threading.Thread(target=username_thread, args=(net, username, password))
+# network_thread.daemon = True  # allow the program to exit if this thread is still running
+# network_thread.start()
+# print("Network thread started")
+
+
+
+
 def loginscreen():
     hoverColourUser ="white" 
     hoverColourPW = "white"
     # Define labels
     username_label = font1.render("Username:", True, black)
     password_label = font1.render("Password:", True, black)
+    user_logged = font1.render("User already logged:", True, black)
+
     # Define input boxes
     username_input_rect = pg.Rect((screenWidth // 2) - 100, screenHeight // 2 - 30, 200, 30)
     password_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 30, 200, 30)
+    # user_logged_rect = user_logged.
+    user_logged_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 120, 200, 30)
+
     # Define login button
     login_button_rect = pg.Rect(screenWidth // 2 - 50, screenHeight // 2 + 80, 100, 30)
     login_text = font1.render("Login", True, black)
@@ -116,8 +196,20 @@ def loginscreen():
     passtext = font1.render(password, True, black)
     usernameSelected = False
     pwSelected = False
+    global player_id, host_player
+
+    user_logged_bool = False
+    
+    # Create a variable to store the login reply
+    
+
+    # Start the network thread
+ 
+
+
     while True:
         clock.tick(60)
+        # print("Login Screen")
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
@@ -135,11 +227,38 @@ def loginscreen():
                     usernameSelected = False
                     hoverColourUser = white
                     hoverColourPW = black
-                elif (login_button_rect.collidepoint(pg.mouse.get_pos())):
-                    if username == "user" and password == "pass" or 1:
+
+                elif (login_button_rect.collidepoint(pg.mouse.get_pos()) and username != ""):
+                    print("Login button pressed")
+                    login_reply = net.send_pass(username,password)
+                    while not login_reply:
+                        print("paused")
+                        pg.time.wait(1)
+
+                    # login_reply = login_reply_var.get()
+                    if "Success" in login_reply:
+                        user_logged_bool = False
+                        player_id = int(login_reply[-1])
+                        host_player = Player(username,None, False, True, player_id)
+                        if player_id == 1:
+                            host_player.hasBomb = True
+
+                        print("username: " + username + "password: " + password)
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
+                    if "User already exists" in login_reply:
+                        user_logged_bool = True
+                        
+                        print("User already exists")
+
+
+                    # print(login_reply)
+                    print("Player id is " + str(player_id))
+                    # if pas == "Success": pass
+                    # else: print("Incorrect password")
+                    
                 else:
+
                     usernameSelected = False
                     pwSelected = False
                     hoverColourUser = white
@@ -190,6 +309,10 @@ def loginscreen():
          # Draw the login button
         pg.draw.rect(screen, "lightblue", login_button_rect)
         screen.blit(login_text, login_text_rect)
+
+        if user_logged_bool:
+            screen.blit(user_logged, user_logged_rect)
+
         # Draw the instructions
         screen.blit(instructions, instructions_rect)
         screen.blit(usertext,  (username_input_rect.left+8, username_input_rect.centery-13)) 
@@ -197,8 +320,14 @@ def loginscreen():
         #blit framerate
         screen.blit(framerate, framerect)
         pg.display.flip()
+       
+
+    
     # To-DO, code for loginscreen
 def playerconnect():
+
+    
+
     waiting_msg = font1.render('Waiting for players to connect...', True, black)
     start_msg = font1.render('Start game', True, black)
     start_msg_rect = start_msg.get_rect()
@@ -229,12 +358,21 @@ def playerconnect():
                   (squares[3][0] +125, squares[3][1]+110),
                   (squares[4][0] +125, squares[4][1]+110),
                   (squares[5][0] +125, squares[5][1]+110)]
-    numPlayers = 3
+    
+    
+    
+
+
     pg.display.flip()
+    global user_count_loop
+    global user_count
+
+    
     
     while True:
         screen.fill(light_grey)
         clock.tick(60)
+        numPlayers = int(user_count)
         framerate = font1.render(str(pg.time.get_ticks()), True, black)
         framerect = framerate.get_rect()
         framerect.bottomright = (screenWidth-10, screenHeight-20)
@@ -251,7 +389,16 @@ def playerconnect():
         pg.draw.rect(screen, green, (screenWidth / 2 - 75, screenHeight - 60, 150, 50), border_radius=10)
         screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, screenHeight - 45))
         # Draw connected message
-        connected_msg = font1.render('Players Connected (3-6): '+str(numPlayers), True, black)
+        
+        #print("Connection:" + str(a))
+
+        # print(user_count)
+        # a = net.receive_data()
+
+
+
+
+        connected_msg = font1.render(f'Players Connected (3-6): {user_count}', True, black)
         screen.blit(connected_msg, (squares[3][0] - 60, 50))
         # Draw waiting message and start button
         screen.blit(waiting_msg, (screenWidth / 2 - waiting_msg.get_width() / 2, screenHeight - 100))
@@ -274,6 +421,23 @@ def playerconnect():
         #blit framerate
         screen.blit(framerate, framerect)
         pg.display.flip()
+        print("getting No of Users: ")
+        # get_users_count()
+        try:
+            user_count = net.get_connection()
+            print("got users", user_count)
+        except:
+            print("waiting for users")
+            # pg.game.wait(100)
+            
+        #b = net.get_connection()
+
+        # a = net.receive_data()
+        # try:
+      # except:
+        #     pass  #     a = net.receive_data()
+        
+
 # def characterselect():
    
 #     pg.display.flip()
@@ -283,131 +447,251 @@ def playerconnect():
 #                 quitGame()
 #         screen.fill(light_grey)
 #         pg.display.flip()
+
+# net2 = Network()
+
+whoSelecting = 0
+
+# def get_char_select():
+#     global whoSelecting
+#     while True:
+
+#         net2.char_select()
+        
+#         try:
+#             a = net2.receive_data()
+#             if "char_select:" in a:
+#                 whoSelecting = int(a[-1])
+#         except:
+#             pass
+
+#         time.sleep(3)
+
+
+# player_count_thread = threading.Thread(target=get_char_select)
+# player_count_thread.daemon = True  # allow the program to exit if this thread is still running
+# player_count_thread.start()
+
+
+# play = ""
+
+
+selected_char = []
+
 def characterselect():
-    #  #load character images
-    # characters = ["sarim", "bouganis", "naylor"]
-    # player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
-    # player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
-    # player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
-    # player1 = pg.image.load("img/sarim.png").convert_alpha()
-    # player2 = pg.image.load("img/sarim.png").convert_alpha()
-    # player3 = pg.image.load("img/sarim.png").convert_alpha()
-    # players = [player1, player2, player3]
+
+    global play
+
     characters_1 = pg.image.load(os.path.join("img","sarim.png")).convert_alpha()
     characters_2 = pg.image.load(os.path.join("img","bouganis.png")).convert_alpha()
     characters_3 = pg.image.load(os.path.join("img","naylor.png")).convert_alpha()
+
     characters_1 = pg.transform.scale(characters_1, (300, 150))
     characters_1_trans = characters_1.copy()
-    characters_1_trans.set_alpha(120)#Pass 0 for invisible and 255 for fully opaque.
-    characters_1rect = characters_1.get_rect(center=((screenWidth // 3)-250,(screenHeight // 3)-70))
+    characters_1_trans.set_alpha(240)  # Pass 0 for invisible and 255 for fully opaque.
+    characters_1rect = characters_1.get_rect(
+        center=((screenWidth // 3) - 250, (screenHeight // 3) - 70)
+    )
+
     characters_2 = pg.transform.scale(characters_2, (300, 150))
     characters_2_trans = characters_2.copy()
     characters_2_trans.set_alpha(240)
-    characters_2rect = characters_2.get_rect(center=((screenWidth // 2), (screenHeight // 3)-70))
+    characters_2rect = characters_2.get_rect(
+        center=((screenWidth // 2), (screenHeight // 3) - 70)
+    )
+
     characters_3 = pg.transform.scale(characters_3, (300, 150))
     characters_3_trans = characters_3.copy()
-    characters_3_trans.set_alpha(120)
-    characters_3rect = characters_3.get_rect(center=((screenWidth // 1.5)+250,(screenHeight // 3)-70))
-    
+    characters_3_trans.set_alpha(240)
+    characters_3rect = characters_3.get_rect(
+        center=((screenWidth // 1.5) + 250, (screenHeight // 3) - 70)
+    )
+
     waiting_msg1 = font1.render("Character Select", True, black)
-    waiting_msg1rect =  waiting_msg1.get_rect(center= ((screenWidth // 2) , (screenHeight //3) -200))        
-    # for player in players:
-    #     player = pg.transform.scale(player, (300, 150))
-    play=["jim","noor", "shaheer"]  
-    numPlayers = 3
-    
-    cc=0
-    ccc1=0
-    ccc2=0
-    ccc3=0
+    waiting_msg1rect = waiting_msg1.get_rect(
+        center=((screenWidth // 2), (screenHeight // 3) - 200)
+    )
+
+    charsSelected = 0
+    global whoSelecting
     pg.display.flip()
-    #characters_rects=[characters_1rect,characters_2rect, characters_3rect]
-    #characters_rects=[]
+    global hostID, selected_char
+    global get_players_loop, user_count_loop
+    user_count_loop = False
+    hostID = host_player.playernum
+    get_players_loop = True
+
+ 
+    print("getting users: ")
+    play = net.get_usr()
+    numPlayers = 1
+
+    if "," in play:
+        play = play.split(",")
+        numPlayers = len(play)
+    else:
+        play = [play]
+
+    global whoSelecting
+
+    # whoSelecting = 0
+
+    print("jnj ", play)
+
+    print("User ID:", player_id)
+    print("sad:", numPlayers)
+
+    # time.sleep(0.5)
+    print("Kul Khara")
+    try:
+        selected_char = net.recieve_char()
+    except:
+        selected_char = []
+
+    try:
+        whoSelecting = net.char_select()
+    except:
+        pass
+
+    # selected_char = []
+
     while True:
+        # print("Starting Lopp")
+
+        screen.fill(light_grey)
+        screen.blit(characters_1_trans, characters_1rect)
+        screen.blit(characters_2_trans, characters_2rect)
+        screen.blit(characters_3_trans, characters_3rect)
+        screen.blit(waiting_msg1, waiting_msg1rect)
+
+        # print("Char: ", charsSelected , " Num: ", numPlayers)
+        while whoSelecting-1 < numPlayers:
+            # print("Running")
+            print("selected_char: ", selected_char)
+            screen.fill(light_grey)
+            screen.blit(characters_1_trans, characters_1rect)
+            screen.blit(characters_2_trans, characters_2rect)
+            screen.blit(characters_3_trans, characters_3rect)
+            screen.blit(waiting_msg1, waiting_msg1rect)
+            # config and blit whos turn it is message
+            # print(play[whoSelecting])
+            try:
+                whoSelecting = net.char_select()
+                selected_char = net.recieve_char()
+            except:
+                whoSelecting = 1
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    exit()
+                if whoSelecting != player_id:  # i am not selecting
+                    success_msg = font1.render(
+                        "Waiting for other players to choose a character", True, black
+                    )
+                    success_msgrect = success_msg.get_rect(
+                        center=((screenWidth // 2), (screenHeight // 2) + 150)
+                    )
+                else:
+                    success_msg = font1.render(
+                        "Please choose a character", True, black
+                    )  # my turn to select character
+                    success_msgrect = success_msg.get_rect(
+                        center=((screenWidth // 2), (screenHeight // 2) + 150)
+                    )
+                    if event.type == pg.MOUSEBUTTONUP:
+                        if characters_1rect.collidepoint(pg.mouse.get_pos()):
+                            if "sarim" not in selected_char:
+                                host_player.character = "sarim"
+                                charsSelected += 1
+                                try:
+                                    selected_char = net.recieve_char(
+                                        host_player.character
+                                    )
+                                except:
+                                    pass
+                            else:
+                                success_msg = font1.render(
+                                    "Character selected, please select another one",
+                                    True,
+                                    black,
+                                )
+                            success_msgrect = success_msg.get_rect(
+                                center=((screenWidth // 2), (screenHeight // 2) + 150)
+                            )
+                        elif characters_2rect.collidepoint(pg.mouse.get_pos()):
+                            if "bouganis" not in selected_char:
+                                host_player.character = "bouganis"
+                                charsSelected += 1
+                                try:
+                                    selected_char = net.recieve_char(
+                                        host_player.character
+                                    )
+                                except:
+                                    pass
+                            else:
+                                success_msg = font1.render(
+                                    "Character selected, please select another one",
+                                    True,
+                                    black,
+                                )
+                                success_msgrect = success_msg.get_rect(
+                                    center=(
+                                        (screenWidth // 2),
+                                        (screenHeight // 2) + 150,
+                                    )
+                                )
+                            screen.blit(success_msg, success_msgrect)
+                        elif characters_3rect.collidepoint(pg.mouse.get_pos()):
+                            if "naylor" not in selected_char:
+                                host_player.character = "naylor"
+                                charsSelected += 1
+                                try:
+                                    selected_char = net.recieve_char(
+                                        host_player.character
+                                    )
+                                except:
+                                    pass
+                            else:
+                                success_msg = font1.render(
+                                    "Character selected, please select another one",
+                                    True,
+                                    black,
+                                )
+                       
+                                success_msgrect = success_msg.get_rect(
+                                    center=(
+                                        (screenWidth // 2),
+                                        (screenHeight // 2) + 150,
+                                    )
+                                )
+                screen.blit(success_msg, success_msgrect)
+
+                pg.display.flip()
+
         for event in pg.event.get():
-            #state = "Waiting"
-            if cc < numPlayers:
-               plays = play[cc]
             if event.type == pg.QUIT:
-                quitGame()
-            elif event.type == pg.MOUSEBUTTONUP:
-                if cc <numPlayers:
-                    print(cc)
-                    #plays = play[cc]
-                    state = "0"
-                    Plays_msg = font1.render(' please connect to a character'+plays, True, black)
-                    Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150))
-                    #screen.blit(Plays_msg,Plays_msgrect)
-                    print (plays)
-                    if (characters_1rect.collidepoint(pg.mouse.get_pos())) and ccc1<1:
-                        state ="1"
-                        success_msg1 = font1.render(plays+' connected to Character1', True, black)
-                        success_msg1rect = success_msg1.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-                        ccc1 = ccc1+1
-                        cc+=1
-                    elif (characters_2rect.collidepoint(pg.mouse.get_pos())) and ccc2<1:
-                        state ="2"
-                        success_msg2 = font1.render(plays+' connected to Character2', True, black)
-                        success_msg2rect = success_msg2.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +200))
-                        ccc2 = ccc2+1
-                        cc+=1
-                        
-                    elif (characters_3rect.collidepoint(pg.mouse.get_pos())) and ccc3<1:
-                        state ="3"
-                        success_msg3 = font1.render(plays+' connected to Character3', True, black)
-                        success_msg3rect = success_msg3.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +250))
-                        ccc3 = ccc3+1
-                        cc+=1
-                    elif  ((characters_3rect.collidepoint(pg.mouse.get_pos())) and ccc3!=0) or  ((characters_2rect.collidepoint(pg.mouse.get_pos())) and ccc2!=0) or ((characters_1rect.collidepoint(pg.mouse.get_pos())) and ccc1!=0):
-                        state ="error"
-                        print("error")
-            elif event.type == pg.KEYDOWN and state == "All_Characters_Connected":
+                pg.quit()
+                exit()
+
+            elif event.type == pg.KEYDOWN:
+                player_count_thread = False
                 game_state_manager.change_state(GameState.MAINGAME)
                 game_state_manager.run_state()
-            elif ccc3 <1 or ccc2 <1 or ccc1 <1:
-                 state = "0"
-                 Plays_msg = font1.render(plays+' please connect to a character', True, black)
-                 Plays_msgrect = Plays_msg.get_rect(center=((screenWidth // 2) , (screenHeight //2) +150)) 
-                
-            elif ccc3>0 and ccc2 >0 and ccc1>0:
-                state = "All_Characters_Connected"
-                
-                        
-            screen.fill(light_grey)
-            unsuccess_msg = font1.render("Character selected, please select another one", True, black)
-            unsuccess_msgrect = unsuccess_msg.get_rect(center= ((screenWidth // 2) , (screenHeight //2) +150))
-            start_msg = font1.render('Press any key to start game', True, black)
-            start_msg_rect = start_msg.get_rect()
-            start_msg_rect.center = ((screenWidth / 2 - start_msg.get_width() / 2), (screenHeight - 45))
-            waiting_msg2 = font1.render("No Character selected yet. Press any key to start character select", True, black)
-            waiting_msg2rect =  waiting_msg2.get_rect(center= ((screenWidth // 2) , (screenHeight //3) -200))        
-            
-            if state == "Waiting":
-               screen.blit(waiting_msg2,waiting_msg2rect)
-            elif state == "All_Characters_Connected" :
-               screen.blit(success_msg1,success_msg1rect)
-               screen.blit(success_msg2,success_msg2rect)
-               screen.blit(success_msg3,success_msg3rect)
-               pg.draw.rect(screen, green, (screenWidth / 2 -190, (screenHeight //2) +40, 365, 50), border_radius=10)
-               screen.blit(start_msg, (screenWidth / 2 - start_msg.get_width() / 2, (screenHeight//2) +50))
-               print("state_all")
-            elif state=="0":
-                screen.blit(Plays_msg,Plays_msgrect)
-            elif state =="1" :
-                screen.blit(success_msg1,success_msg1rect)
-            elif state =="2":
-               screen.blit(success_msg2,success_msg2rect)
-            elif state =="3":
-               screen.blit(success_msg3,success_msg3rect)
-            elif state =="error":
-               screen.blit(unsuccess_msg,unsuccess_msgrect)
-      
-      
-        screen.blit(characters_1,characters_1rect)
-        screen.blit(characters_2,characters_2rect)
-        screen.blit(characters_3,characters_3rect)
-        screen.blit(waiting_msg1,waiting_msg1rect)
-        pg.display.flip()
+
+        # blit startgame prompt
+        start_msg = font1.render("Press any key to start the game", True, black)
+        start_msg_rect = start_msg.get_rect()
+        start_msg_rect.center = (
+            (screenWidth / 2 - start_msg.get_width() / 2),
+            (screenHeight - 45),
+        )
+        screen.blit(
+            start_msg,
+            (screenWidth / 2 - start_msg.get_width() / 2, (screenHeight // 2) + 50),
+        )
+
+        pg.display.update()
+
 
 
 c = 0
@@ -422,106 +706,252 @@ def send_data(c):
         reply = net.send(data)
         return reply
 
-# @staticmethod
-def parse_data(data):
-        try:
-            d = data.split(":")[1]
-            return int(d[1])
-        except:
-            return 0
+# # @staticmethod
+# def parse_data(data):
+#         try:
+#             d = data.split(":")[1]
+#             return int(d[1])
+#         except:
+#             return 0
+
+
+
+# def maingame():
+#     global host_player
+#     global play, c
+#     pg.display.flip()
+#     #load character images
+
+    
+
+
+#     #load bomb
+#     bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+#     bomb_img = pg.transform.scale(bomb_img, (70, 70))
+#     bomb_rect = bomb_img.get_rect()
+#     # fps=30
+#     clock = pg.time.Clock()
+#     hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the starT
+        
+#     while True:
+#             clock.tick(60)
+#             initial = players[c]
+            
+#             for event in pg.event.get():
+#                 if event.type == pg.QUIT:
+#                     pg.quit()
+#                     exit()
+#                 if event.type == pg.K_ESCAPE:
+#                     pg.quit()
+#                     exit()
+#                 if event.type == pg.KEYDOWN:
+#                     if event.key == pg.K_LEFT:
+#                         c+=1
+#                         if c>=len(players):
+#                             c = 0
+
+#                         print("Left")
+#                     elif event.key == pg.K_RIGHT:
+
+#                         print(c,"RIGHT")
+
+#             if hasBomb == host_player.playernum:
+#                 pass #I HAVE THE MFCKIN BOMB
+
+#             initial.hasBomb = False
+#             # d = parse_data(send_data(c))
+#             # print(send_data(c))
+#             players[c].hasBomb = True
+
+#             screen.fill("orange")
+#             screen.blit(player1.img, player1.player_rect)
+#             screen.blit(player2.img, player2.player_rect)
+#             screen.blit(player3.img, player3.player_rect)
+
+            
+            
+
+
+#             for player in players:
+#                 if (player.hasBomb):
+#                     #initial = player
+                    
+#                     bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
+#                     screen.blit(bomb_img, bomb_rect)
+        
+            
+#             #pg.display.flip()
+                
+#             pg.display.update()
+#             #fpsclock.tick(fps)
+
 
 
 
 def maingame():
-    pg.display.flip()
+    global host_player
+    global play, selected_char
+    
+
     #load character images
-    characters = ["sarim", "bouganis", "naylor"]
+    playerimgWidth = 200
+    playerimgHeight = 200
+    selected_char = selected_char.split(",")
+    playernumtext = font1.render("Player "+str(host_player.playernum), True, (255, 255, 255))
+    playernumrect = playernumtext.get_rect()
+    playernumrect.center = (screenWidth-100, 50)
 
-    #init players
-    player1 = Player("noor", characters[0], hasBomb = True, isAlive = True, playernum = 1)
-    player2 = Player("shaheer", characters[1], hasBomb = False, isAlive = True, playernum =  2)
-    player3 = Player("jim", characters[2], hasBomb = False, isAlive = True, playernum = 3)
-    players = [player1, player2, player3]
+
+    player1img = pg.image.load("img/"+str(selected_char[0])+".png").convert_alpha()
+    player2img = pg.image.load("img/"+str(selected_char[1])+".png").convert_alpha()
+    player3img = pg.image.load("img/"+str(selected_char[2])+".png").convert_alpha()
+    player1img = pg.transform.scale(player1img, (playerimgWidth, playerimgHeight))
+    player2img = pg.transform.scale(player2img, (playerimgWidth, playerimgHeight))
+    player3img = pg.transform.scale(player3img, (playerimgWidth, playerimgHeight))
+    player1imgrect = player1img.get_rect()
+    player2imgrect = player2img.get_rect()
+    player3imgrect = player3img.get_rect()
+    player1imgrect.center = ((screenWidth // 2), (screenHeight // 3)+300)
+    player2imgrect.center = ((screenWidth // 2)-300, (screenHeight // 3))
+    player3imgrect.center = ((screenWidth // 2)+300, (screenHeight // 3))
     #load bomb
-    bomb_img = pg.image.load(os.path.join('img','bomb.png')).convert_alpha()
-    bomb_img = pg.transform.scale(bomb_img, (70, 70))
+    bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+    bomb_img = pg.transform.scale(bomb_img, (110, 110))
     bomb_rect = bomb_img.get_rect()
-    # fps=30
-    clock = pg.time.Clock()
-
-    c = 0
-    initial = player1
-
-    while True:
-        clock.tick(60)
-        initial = players[c]
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                quitGame()
-
-            if event.type == pg.K_ESCAPE:
-                quitGame()
-                
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_LEFT:
-                    
-                    c+=1
-                    if c>=len(players):
-                        c = 0
-                    #print(players[c])
-
-                    # bomb_rect.center = (players[-1].player_rect[0]+140, player[-1].player_rect[1]+100) 
-                    # screen.blit(bomb_img, bomb_rect)
-                    # players[d].hasBomb = True
-
-                    #print(c,"LEFT")
-                    print("Left")
-                elif event.key == pg.K_RIGHT:
-                    c-=1
-                    if c <= -len(players):
-                        c = 0
-                    # print(players[c])
-                    # initial.hasBomb = False
-                    # d = parse_data(send_data(c))
-                    # bomb_rect.center = (players[-1].player_rect[0]+140, player[-1].player_rect[1]+100) 
-                    # screen.blit(bomb_img, bomb_rect)
-
-                    print(c,"RIGHT")
-                    # print("Right")
-                # elif event.key == pg.K_UP:
-                #     print("Up")
-                # elif event.key == pg.K_DOWN:
-                #     print("Down")
 
 
+    screen.fill("orange")
 
-        initial.hasBomb = False
-        d = parse_data(send_data(c))
-        print(send_data(c))
-        players[d].hasBomb = True
-
+    allPlayersReady = False
+    net.getReadyPlayers("imready", host_player.playernum)
+    while not (allPlayersReady):
+        numreadyplayers = len(net.getReadyPlayers("whosReady", host_player.playernum))
+        waiting_msg = font1.render("Players ready: "+str(numreadyplayers), True, black)
+        waiting_msg_rect = waiting_msg.get_rect()
+        waiting_msg_rect.center = (
+                (screenWidth / 2 - waiting_msg.get_width() / 2),
+                (screenHeight + 100),
+            )
         screen.fill("orange")
-        screen.blit(player1.img, player1.player_rect)
-        screen.blit(player2.img, player2.player_rect)
-        screen.blit(player3.img, player3.player_rect)
-
-
-
-
-
-        for player in players:
-            if (player.hasBomb):
-                #initial = player
-
-                bomb_rect.center = (player.player_rect[0]+140, player.player_rect[1]+100) 
-                screen.blit(bomb_img, bomb_rect)
-
-
-        #pg.display.flip()
-        #pg.display.flip()
+        screen.blit(
+            waiting_msg,
+            (screenWidth / 2 - waiting_msg.get_width() / 2, (screenHeight // 2) + 50),
+        )
+        screen.blit(playernumtext, playernumrect)
+        if numreadyplayers == 3:
+            allPlayersReady = True
 
         pg.display.update()
-        #fpsclock.tick(fps)
+    #ALL PLAYERS READY
+    timerstart = pg.time.get_ticks()
+    hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the start
+    bombDuration = 60
+
+
+
+
+   
+    
+    
+    # fps=30
+    clock = pg.time.Clock()
+    screen.fill("orange")
+    screen.blit(player1img, player1imgrect)
+    screen.blit(player2img, player2imgrect)
+    screen.blit(player3img, player3imgrect)
+
+    pg.display.update()
+
+    while True:
+         #Display player with bomb
+        playerwithbomtext = font1.render("Player "+str(hasBomb) + " Bomb!", True, (255, 255, 255))
+        playerwithbomrect = playerwithbomtext.get_rect()
+        playerwithbomrect.bottomleft = (100, screenHeight - 50)
+        
+        screen.fill("orange")
+        screen.blit(player1img, player1imgrect)
+        screen.blit(player2img, player2imgrect)
+        screen.blit(player3img, player3imgrect)
+        screen.blit(playernumtext, playernumrect)
+        screen.blit(playerwithbomtext, playerwithbomrect)
+        if hasBomb == 1:
+            bomb_rect.center = (player1imgrect[0]-40, player1imgrect[1]-40)
+        elif hasBomb == 2:
+            bomb_rect.center = (player2imgrect[0]-40, player2imgrect[1]-40)
+        elif hasBomb == 3:
+            bomb_rect.center = (player3imgrect[0]-40, player3imgrect[1]-40)
+        screen.blit(bomb_img, bomb_rect)
+        clock.tick(60)
+        elapsedtime = (pg.time.get_ticks() - timerstart) // 1000
+        remaining_time = bombDuration - elapsedtime
+        if remaining_time > 0:
+            timertext = font1.render(str(remaining_time), True, "red")
+        else:
+            if host_player.playernum == hasBomb:
+                timertext = font1.render("BAHAHAHAHAHHAH! YOU LOST!", True, "red")
+            else:
+                timertext = font1.render("Player " +str(hasBomb) +": " + play[hasBomb-1] + " is the loser!", True, "red")
+        timertextrect = timertext.get_rect()
+        timertextrect.center = (screenWidth//2, screenHeight//2)
+        screen.blit(timertext, timertextrect)
+
+
+        if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_LEFT:
+                        if host_player.playernum == 1:
+                            hasBomb = 2 # passed to player 2
+                            net.hasbomb(2)
+                            print ("1 passed to 2")
+                            #to-do: pass hasBomb to server so server knows player 2 now has bomb
+                        elif host_player.playernum == 2:
+                            hasBomb = 3
+                            net.hasbomb(3)
+                            print ("2 passed to 3")
+                            #to-do pass hasBomb to server
+                        elif host_player.playernum == 3:
+                            hasBomb = 1
+                            print ("3 tryna throw")
+                            net.hasbomb(1)
+                            print ("3 passed to 1")
+                        else:
+                            print ("unrecognised " + str(host_player.playernum))
+                    elif event.key == pg.K_RIGHT:
+                        if host_player.playernum == 1:
+                            hasBomb = 3
+                            net.hasbomb(3)
+                            print ("1 passed to 3")
+                            #todo: pass to server
+                        elif host_player.playernum == 2:
+                            hasBomb = 1
+                            net.hasbomb(1)
+                            print ("2 passed to 1")
+                            #todo: pass to server
+                        elif host_player.playernum == 3:
+                            
+                            print ("3 tryna throw")
+                            hasBomb = 2
+                            net.hasbomb(2)
+                            print ("3 passed to 2")
+                            #todo: pass to server
+        else: #i dont have bomb
+                #check who has bomb function from server
+            
+            hasBomb = net.hasbomb(99)
+            
+                #while i dont have bomb, check who has bomb
+                #todo: function to get hasBomb from server
+                #i.e. hasBomb = server.get()
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
+
+        pg.display.update()
+            #fpsclock.tick(fps)
+
 
 
 
