@@ -852,7 +852,7 @@ def maingame():
     #ALL PLAYERS READY
     timerstart = pg.time.get_ticks()
     hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the start
-    bombDuration = 60
+    bombDuration = 30
 
 
 
@@ -882,11 +882,11 @@ def maingame():
         screen.blit(playernumtext, playernumrect)
         screen.blit(playerwithbomtext, playerwithbomrect)
         if hasBomb == 1:
-            bomb_rect.center = (player1imgrect[0]-40, player1imgrect[1]-40)
+            bomb_rect.center = (player1imgrect[0]+40, player1imgrect[1]+40)
         elif hasBomb == 2:
-            bomb_rect.center = (player2imgrect[0]-40, player2imgrect[1]-40)
+            bomb_rect.center = (player2imgrect[0]+40, player2imgrect[1]+40)
         elif hasBomb == 3:
-            bomb_rect.center = (player3imgrect[0]-40, player3imgrect[1]-40)
+            bomb_rect.center = (player3imgrect[0]+40, player3imgrect[1]+40)
         screen.blit(bomb_img, bomb_rect)
         clock.tick(60)
         elapsedtime = (pg.time.get_ticks() - timerstart) // 1000
