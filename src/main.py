@@ -623,7 +623,7 @@ def characterselect():
                                     black,
                                 )
                             success_msgrect = success_msg.get_rect(
-                                center=((screenWidth // 2), (screenHeight // 2) + 150)
+                                center=((screenWidth // 2), (screenHeight // 2) + 200)
                             )
                         elif characters_2rect.collidepoint(pg.mouse.get_pos()):
                             if "bouganis" not in selected_char:
@@ -644,7 +644,7 @@ def characterselect():
                                 success_msgrect = success_msg.get_rect(
                                     center=(
                                         (screenWidth // 2),
-                                        (screenHeight // 2) + 150,
+                                        (screenHeight // 2) + 200,
                                     )
                                 )
                             screen.blit(success_msg, success_msgrect)
@@ -668,7 +668,7 @@ def characterselect():
                                 success_msgrect = success_msg.get_rect(
                                     center=(
                                         (screenWidth // 2),
-                                        (screenHeight // 2) + 150,
+                                        (screenHeight // 2) + 200,
                                     )
                                 )
                 screen.blit(success_msg, success_msgrect)
@@ -893,12 +893,15 @@ def maingame():
         remaining_time = bombDuration - elapsedtime
         if remaining_time > 0:
             timertext = font1.render(str(remaining_time), True, "red")
-        else:
+        elif remaining_time == 0:
+            gameEnd = True
             if host_player.playernum == hasBomb:
                 timertext = font1.render("BAHAHAHAHAHHAH! YOU LOST!", True, "red")
                 controller.setLEDS(True)
+                
             else:
                 timertext = font1.render("Player " +str(hasBomb) +": " + play[hasBomb-1] + " is the loser!", True, "red")
+
         timertextrect = timertext.get_rect()
         timertextrect.center = (screenWidth//2, screenHeight//2)
         screen.blit(timertext, timertextrect)
