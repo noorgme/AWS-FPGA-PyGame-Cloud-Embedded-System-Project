@@ -12,7 +12,7 @@ import time
 proj_folder = str(os.path.dirname((os.path.dirname(os.path.realpath(__file__)))))
 
 os.chdir(os.path.join(proj_folder,"include"))
-#controller = NiosConnector()
+controller = NiosConnector()
 
 net = Network()
 user_count = 1
@@ -889,6 +889,7 @@ def maingame():
         else:
             if host_player.playernum == hasBomb:
                 timertext = font1.render("BAHAHAHAHAHHAH! YOU LOST!", True, "red")
+                controller.setLEDS(True)
             else:
                 timertext = font1.render("Player " +str(hasBomb) +": " + play[hasBomb-1] + " is the loser!", True, "red")
         timertextrect = timertext.get_rect()
@@ -897,6 +898,9 @@ def maingame():
 
 
         if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
+            direction = controller.getDirection()
+            if direction != 0:
+                pg.event.post(pg.event.Event(pg.KEYDOWN, key=pg.K_LEFT if direction == -1 else pg.K_RIGHT))
             for event in pg.event.get():
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_LEFT:
