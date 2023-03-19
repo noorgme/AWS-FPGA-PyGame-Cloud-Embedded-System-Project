@@ -22,6 +22,10 @@ class NiosConnector():
         except Exception as e:
             if str(e) == "Cable not available":
                 print("CONTROLLER NOT CONNECTED!!")
+                self._niosBridge = None
+            if str(e) == "Another program is already using the UART":
+                print("CONTROLLER ALREADY CONNECTED!!")
+                self._niosBridge = None
             else:
                 self._niosBridge.close()
                 raise e
@@ -31,6 +35,8 @@ class NiosConnector():
         return self._parseVector(self._niosBridge.read().decode().rstrip())
     
     def getDirection(self) -> int:
+        if self._niosBridge is None:
+            return 0
         vec = self.getVector()
         if(vec[0] > THRESHOLD):
             return 1
