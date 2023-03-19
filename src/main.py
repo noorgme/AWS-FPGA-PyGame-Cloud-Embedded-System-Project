@@ -125,7 +125,7 @@ class Player:
         Player.hasBomb = True
 #Define Screen Functions
 def titlescreen():
-    bomb_surface = pg.image.load("img/background.png")
+    bomb_surface = pg.image.load(os.path.join("img","background.png"))
     title_surface =  title_font.render("Boomtato", True, red)
     titleMsg1 = font1.render("Press any key to continue", True,white)
     titleMsg1rect = titleMsg1.get_rect()
@@ -175,7 +175,7 @@ def loginscreen():
     hoverColourPW = "white"
     
     # Define background Images
-    login_background = pg.image.load("img/login_background.png")
+    login_background = pg.image.load(os.path.join("img","login_background.png"))
     # Define labels
     username_label = font1.render("Username:", True, red)
     password_label = font1.render("Password:", True, red)
@@ -623,7 +623,7 @@ def characterselect():
                                     black,
                                 )
                             success_msgrect = success_msg.get_rect(
-                                center=((screenWidth // 2), (screenHeight // 2) + 150)
+                                center=((screenWidth // 2), (screenHeight // 2) + 200)
                             )
                         elif characters_2rect.collidepoint(pg.mouse.get_pos()):
                             if "bouganis" not in selected_char:
@@ -644,7 +644,7 @@ def characterselect():
                                 success_msgrect = success_msg.get_rect(
                                     center=(
                                         (screenWidth // 2),
-                                        (screenHeight // 2) + 150,
+                                        (screenHeight // 2) + 200,
                                     )
                                 )
                             screen.blit(success_msg, success_msgrect)
@@ -668,7 +668,7 @@ def characterselect():
                                 success_msgrect = success_msg.get_rect(
                                     center=(
                                         (screenWidth // 2),
-                                        (screenHeight // 2) + 150,
+                                        (screenHeight // 2) + 200,
                                     )
                                 )
                 screen.blit(success_msg, success_msgrect)
@@ -733,7 +733,7 @@ def send_data(c):
 
 
 #     #load bomb
-#     bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+#     bomb_img = pg.image.load(os.path.join("img","bomb.png")).convert_alpha()
 #     bomb_img = pg.transform.scale(bomb_img, (70, 70))
 #     bomb_rect = bomb_img.get_rect()
 #     # fps=30
@@ -809,9 +809,9 @@ def maingame():
     playernumrect.center = (screenWidth-100, 50)
 
 
-    player1img = pg.image.load("img/"+str(selected_char[0])+".png").convert_alpha()
-    player2img = pg.image.load("img/"+str(selected_char[1])+".png").convert_alpha()
-    player3img = pg.image.load("img/"+str(selected_char[2])+".png").convert_alpha()
+    player1img = pg.image.load(os.path.join("img",str(selected_char[0])+".png")).convert_alpha()
+    player2img = pg.image.load(os.path.join("img",str(selected_char[1])+".png")).convert_alpha()
+    player3img = pg.image.load(os.path.join("img",str(selected_char[2])+".png")).convert_alpha()
     player1img = pg.transform.scale(player1img, (playerimgWidth, playerimgHeight))
     player2img = pg.transform.scale(player2img, (playerimgWidth, playerimgHeight))
     player3img = pg.transform.scale(player3img, (playerimgWidth, playerimgHeight))
@@ -822,7 +822,7 @@ def maingame():
     player2imgrect.center = ((screenWidth // 2)-300, (screenHeight // 3))
     player3imgrect.center = ((screenWidth // 2)+300, (screenHeight // 3))
     #load bomb
-    bomb_img = pg.image.load("img/bomb.png").convert_alpha()
+    bomb_img = pg.image.load(os.path.join("img","bomb.png")).convert_alpha()
     bomb_img = pg.transform.scale(bomb_img, (110, 110))
     bomb_rect = bomb_img.get_rect()
 
@@ -852,7 +852,7 @@ def maingame():
     #ALL PLAYERS READY
     timerstart = pg.time.get_ticks()
     hasBomb = 1 #to-do GET hasBomb value from server. Should start at 1 meaning player with ID 1 has bomb at the start
-    bombDuration = 60
+    bombDuration = 30
 
 
 
@@ -882,23 +882,26 @@ def maingame():
         screen.blit(playernumtext, playernumrect)
         screen.blit(playerwithbomtext, playerwithbomrect)
         if hasBomb == 1:
-            bomb_rect.center = (player1imgrect[0]-40, player1imgrect[1]-40)
+            bomb_rect.center = (player1imgrect[0]+40, player1imgrect[1]+40)
         elif hasBomb == 2:
-            bomb_rect.center = (player2imgrect[0]-40, player2imgrect[1]-40)
+            bomb_rect.center = (player2imgrect[0]+40, player2imgrect[1]+40)
         elif hasBomb == 3:
-            bomb_rect.center = (player3imgrect[0]-40, player3imgrect[1]-40)
+            bomb_rect.center = (player3imgrect[0]+40, player3imgrect[1]+40)
         screen.blit(bomb_img, bomb_rect)
         clock.tick(60)
         elapsedtime = (pg.time.get_ticks() - timerstart) // 1000
         remaining_time = bombDuration - elapsedtime
         if remaining_time > 0:
             timertext = font1.render(str(remaining_time), True, "red")
-        else:
+        elif remaining_time == 0:
+            gameEnd = True
             if host_player.playernum == hasBomb:
                 timertext = font1.render("BAHAHAHAHAHHAH! YOU LOST!", True, "red")
                 controller.setLEDS(True)
+                
             else:
                 timertext = font1.render("Player " +str(hasBomb) +": " + play[hasBomb-1] + " is the loser!", True, "red")
+
         timertextrect = timertext.get_rect()
         timertextrect.center = (screenWidth//2, screenHeight//2)
         screen.blit(timertext, timertextrect)
@@ -988,15 +991,15 @@ red = (255, 0, 0)
 
 
 #Set Fonts
-font1 = pg.font.Font(r"fonts/retro.ttf", 20)
-title_font = pg.font.Font(r"fonts/SuperMario256.ttf",50)
+font1 = pg.font.Font(os.path.join("fonts","retro.ttf"), 20)
+title_font = pg.font.Font(os.path.join("fonts","SuperMario256.ttf"),50)
 
 
 #Setup clock
 clock = pg.time.Clock()
 
 #Load Media
-#titleLogo = pg.image.load(r"img/title.png").convert_alpha()
+#titleLogo = pg.image.load(os.path.join("img","title.png")).convert_alpha()
 #updated and not used
 
 #background music
