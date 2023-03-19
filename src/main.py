@@ -999,6 +999,10 @@ clock = pg.time.Clock()
 #titleLogo = pg.image.load(r"img/title.png").convert_alpha()
 #updated and not used
 
+#background music
+bg_music = pg.mixer.Sound(r"music/bg_music.mp3")
+bg_music.set_volume(0.5)
+bg_music.play(loops = -1)
 
 def main():
     game_state_manager.run_state()
