@@ -70,6 +70,24 @@ void filter(alt_32 buffer[3][FILTER_SIZE], alt_32 x_read,alt_32 y_read,alt_32 z_
 	FILTER_HEAD = (FILTER_HEAD + 1) % FILTER_SIZE;
 }
 
+void setText(int a){
+	if(a == 1){
+		IOWR(HEX5_BASE,0,0b0000000);
+		IOWR(HEX4_BASE,0,0b1000000);
+		IOWR(HEX3_BASE,0,0b1001100);
+		IOWR(HEX2_BASE,0,0b1011000);
+		IOWR(HEX1_BASE,0,0b0000011);
+	}
+	else{
+		IOWR(HEX5_BASE,0,0b1111111);
+		IOWR(HEX4_BASE,0,0b1111111);
+		IOWR(HEX3_BASE,0,0b1111111);
+		IOWR(HEX2_BASE,0,0b1111111);
+		IOWR(HEX1_BASE,0,0b1111111);
+		IOWR(HEX0_BASE,0,0b1111111);
+	}
+}
+
 int main() {
 
 	alt_32 FILTER_BUFFER[3][FILTER_SIZE];
@@ -97,6 +115,12 @@ int main() {
         	else if(RECV_CHAR == 'l'){
         		 LEDS = 0;
         		 IOWR(LED_BASE, 0, LEDS);
+        	}
+        	else if(RECV_CHAR == 'B'){
+        		setText(1);
+        	}
+        	else if(RECV_CHAR == 'b'){
+        		setText(0);
         	}
 
         	RECV_FLAG = 0; //Reset flag to wait for next receive

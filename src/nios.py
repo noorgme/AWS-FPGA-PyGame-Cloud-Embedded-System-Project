@@ -18,7 +18,10 @@ class NiosConnector():
     def __init__(self):
         try: 
             self._niosBridge = intel_jtag_uart.intel_jtag_uart()
+            self._hasBomb = False
+            self._ledsLit = False
             self.setLEDS(False)
+            self.setBomb(False)
         except Exception as e:
             if str(e) == "Cable not available":
                 print("CONTROLLER NOT CONNECTED!!")
@@ -45,11 +48,22 @@ class NiosConnector():
         return 0
     
     def setLEDS(self,on:bool):
-        if(on):
-            self._niosBridge.write(b'L')
-        else:
-            self._niosBridge.write(b'l')
-        self._niosBridge.read()
+        if on != self._ledsLit:
+            self._ledsLit = on
+            if(on):
+                self._niosBridge.write(b'L')
+            else:
+                self._niosBridge.write(b'l')
+            self._niosBridge.read()
+    
+    def setBomb(self, on:bool):
+        if on != self._hasBomb:
+            self._hasBomb = on
+            if(on):
+                self._niosBridge.write(b'B')
+            else:
+                self._niosBridge.write(b'b')
+            self._niosBridge.read()
 
     # hex string to signed integer
     def _hexToInt(self, val:str) -> int:
