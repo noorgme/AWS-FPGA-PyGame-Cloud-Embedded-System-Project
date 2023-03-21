@@ -180,12 +180,14 @@ def loginscreen():
     username_label = font1.render("Username:", True, red)
     password_label = font1.render("Password:", True, red)
     user_logged = font1.render("User already logged:", True, red)
+    wrong_pass = font1.render("Wrong password:", True, red)
 
     # Define input boxes
     username_input_rect = pg.Rect((screenWidth // 2) - 100, screenHeight // 2 - 30, 200, 30)
     password_input_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 30, 200, 30)
     # user_logged_rect = user_logged.
     user_logged_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 120, 200, 30)
+    wrong_pass_rect = pg.Rect(screenWidth // 2 - 100, screenHeight // 2 + 120, 200, 30)
 
     # Define login button
     login_button_rect = pg.Rect(screenWidth // 2 - 50, screenHeight // 2 + 80, 100, 30)
@@ -205,6 +207,7 @@ def loginscreen():
     global player_id, host_player
 
     user_logged_bool = False
+    wrong_password_bool = False
     
     # Create a variable to store the login reply
     
@@ -252,10 +255,16 @@ def loginscreen():
                         print("username: " + username + "password: " + password)
                         game_state_manager.change_state(GameState.PLAYERCONNECT)
                         game_state_manager.run_state()
-                    if "User already exists" in login_reply:
-                        user_logged_bool = True
+                    if "Wrong Password" in login_reply:
+                        wrong_password_bool = True
+                        user_logged_bool = False
                         
-                        print("User already exists")
+                        print("Wrong Password")
+                        
+                    if "User already logged" in login_reply:
+                        user_logged_bool = True
+                        wrong_password_bool = False
+                        print("User already logged")
 
 
                     # print(login_reply)
@@ -319,6 +328,9 @@ def loginscreen():
 
         if user_logged_bool:
             screen.blit(user_logged, user_logged_rect)
+        
+        if wrong_password_bool:
+            screen.blit(wrong_pass, wrong_pass_rect)
 
         # Draw the instructions
         screen.blit(instructions, instructions_rect)

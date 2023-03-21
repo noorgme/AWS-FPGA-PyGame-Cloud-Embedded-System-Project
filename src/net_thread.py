@@ -14,7 +14,7 @@ class Network:
     def __init__(self):
           self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
           # get local machine nam
-          self.host = socket.gethostname()
+          self.host = "3.85.175.1"
           # set port numbe
           self.port = 9991
           # connect to the serve
