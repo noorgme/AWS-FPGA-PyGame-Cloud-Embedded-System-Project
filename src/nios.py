@@ -18,7 +18,7 @@ class NiosConnector():
     def __init__(self):
         try: 
             self._niosBridge = intel_jtag_uart.intel_jtag_uart()
-            self._hasBomb = False
+            self._hasBomb = True
             self._ledsLit = False
             self.setLEDS(False)
             self.setBomb(False)
