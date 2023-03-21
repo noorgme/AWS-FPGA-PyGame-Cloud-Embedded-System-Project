@@ -5,6 +5,12 @@
 			accelerometer_spi_external_interface_G_SENSOR_CS_N : out   std_logic;                           -- G_SENSOR_CS_N
 			accelerometer_spi_external_interface_G_SENSOR_INT  : in    std_logic                    := 'X'; -- G_SENSOR_INT
 			clk_clk                                            : in    std_logic                    := 'X'; -- clk
+			hex0_external_connection_export                    : out   std_logic_vector(6 downto 0);        -- export
+			hex1_external_connection_export                    : out   std_logic_vector(6 downto 0);        -- export
+			hex2_external_connection_export                    : out   std_logic_vector(6 downto 0);        -- export
+			hex3_external_connection_export                    : out   std_logic_vector(6 downto 0);        -- export
+			hex4_external_connection_export                    : out   std_logic_vector(6 downto 0);        -- export
+			hex5_external_connection_export                    : out   std_logic_vector(6 downto 0);        -- export
 			led_external_connection_export                     : out   std_logic_vector(9 downto 0);        -- export
 			reset_reset_n                                      : in    std_logic                    := 'X'  -- reset_n
 		);
@@ -17,6 +23,12 @@
 			accelerometer_spi_external_interface_G_SENSOR_CS_N => CONNECTED_TO_accelerometer_spi_external_interface_G_SENSOR_CS_N, --                                     .G_SENSOR_CS_N
 			accelerometer_spi_external_interface_G_SENSOR_INT  => CONNECTED_TO_accelerometer_spi_external_interface_G_SENSOR_INT,  --                                     .G_SENSOR_INT
 			clk_clk                                            => CONNECTED_TO_clk_clk,                                            --                                  clk.clk
+			hex0_external_connection_export                    => CONNECTED_TO_hex0_external_connection_export,                    --             hex0_external_connection.export
+			hex1_external_connection_export                    => CONNECTED_TO_hex1_external_connection_export,                    --             hex1_external_connection.export
+			hex2_external_connection_export                    => CONNECTED_TO_hex2_external_connection_export,                    --             hex2_external_connection.export
+			hex3_external_connection_export                    => CONNECTED_TO_hex3_external_connection_export,                    --             hex3_external_connection.export
+			hex4_external_connection_export                    => CONNECTED_TO_hex4_external_connection_export,                    --             hex4_external_connection.export
+			hex5_external_connection_export                    => CONNECTED_TO_hex5_external_connection_export,                    --             hex5_external_connection.export
 			led_external_connection_export                     => CONNECTED_TO_led_external_connection_export,                     --              led_external_connection.export
 			reset_reset_n                                      => CONNECTED_TO_reset_reset_n                                       --                                reset.reset_n
 		);

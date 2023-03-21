@@ -3,7 +3,7 @@
 # Machine generated for CPU 'cpu' in SOPC Builder design 'nios_accelerometer'
 # SOPC Builder design path: ../../nios_accelerometer.sopcinfo
 #
-# Generated: Fri Mar 17 18:39:06 GMT 2023
+# Generated: Tue Mar 21 15:54:40 GMT 2023
 
 # DO NOT MODIFY THIS FILE
 #

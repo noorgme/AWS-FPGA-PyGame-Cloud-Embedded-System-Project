@@ -920,6 +920,7 @@ def maingame():
 
 
         if hasBomb == host_player.playernum: #I HAVE THE MFCKIN BOMB
+            controller.setBomb(True)
             direction = controller.getDirection()
             if direction != 0:
                 pg.event.post(pg.event.Event(pg.KEYDOWN, key=pg.K_LEFT if direction == -1 else pg.K_RIGHT))
@@ -963,7 +964,7 @@ def maingame():
                             #todo: pass to server
         else: #i dont have bomb
                 #check who has bomb function from server
-            
+            controller.setBomb(False)
             hasBomb = net.hasbomb(99)
             
                 #while i dont have bomb, check who has bomb

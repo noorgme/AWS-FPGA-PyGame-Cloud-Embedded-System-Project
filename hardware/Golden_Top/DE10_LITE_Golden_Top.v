@@ -81,6 +81,12 @@ module DE10_LITE_Golden_Top(
 		.accelerometer_spi_external_interface_G_SENSOR_INT  (GSENSOR_INT[1]),  //                                     .G_SENSOR_INT
 		.clk_clk                                            (MAX10_CLK1_50),                                            //                                  clk.clk
 		.led_external_connection_export                     (LEDR[9:0]),                     //              led_external_connection.export
+		.hex0_external_connection_export							 (HEX0[7:0]),
+		.hex1_external_connection_export							 (HEX1[7:0]),
+		.hex2_external_connection_export							 (HEX2[7:0]),
+		.hex3_external_connection_export							 (HEX3[7:0]),
+		.hex4_external_connection_export							 (HEX4[7:0]),
+		.hex5_external_connection_export							 (HEX5[7:0]),
 		.reset_reset_n                                      (1'b1)                                       //                                reset.reset_n
 	);
 

@@ -7,19 +7,30 @@ preplace inst nios_accelerometer.cpu.clock_bridge -pg 1
 preplace inst nios_accelerometer.onchip_memory -pg 1 -lvl 3 -y 370
 preplace inst nios_accelerometer.cpu -pg 1 -lvl 2 -y 270
 preplace inst nios_accelerometer.clk -pg 1 -lvl 1 -y 570
+preplace inst nios_accelerometer.hex0 -pg 1 -lvl 3 -y 630
 preplace inst nios_accelerometer.cpu.reset_bridge -pg 1
 preplace inst nios_accelerometer.jtag_uart -pg 1 -lvl 3 -y 150
+preplace inst nios_accelerometer.hex1 -pg 1 -lvl 3 -y 730
 preplace inst nios_accelerometer.led -pg 1 -lvl 3 -y 530
+preplace inst nios_accelerometer.hex2 -pg 1 -lvl 3 -y 830
 preplace inst nios_accelerometer.timer -pg 1 -lvl 3 -y 250
+preplace inst nios_accelerometer.hex3 -pg 1 -lvl 3 -y 1130
+preplace inst nios_accelerometer.hex4 -pg 1 -lvl 3 -y 930
+preplace inst nios_accelerometer.hex5 -pg 1 -lvl 3 -y 1030
 preplace inst nios_accelerometer -pg 1 -lvl 1 -y 40 -regy -20
-preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(MASTER)nios_accelerometer.cpu_custom_instruction_master,(MASTER)cpu.custom_instruction_master) 1 2 2 NJ 360 NJ
-preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)accelerometer_spi.external_interface,(SLAVE)nios_accelerometer.accelerometer_spi_external_interface) 1 0 3 NJ 80 NJ 80 NJ
-preplace netloc FAN_OUT<net_container>nios_accelerometer</net_container>(SLAVE)accelerometer_spi.interrupt,(SLAVE)jtag_uart.irq,(MASTER)cpu.irq,(SLAVE)timer.irq) 1 2 1 870
-preplace netloc FAN_OUT<net_container>nios_accelerometer</net_container>(SLAVE)timer.reset,(SLAVE)sysid_qsys.reset,(SLAVE)onchip_memory.reset1,(SLAVE)led.reset,(SLAVE)cpu.reset,(MASTER)clk.clk_reset,(SLAVE)accelerometer_spi.reset,(SLAVE)jtag_uart.reset) 1 1 2 430 430 890
-preplace netloc FAN_OUT<net_container>nios_accelerometer</net_container>(SLAVE)sysid_qsys.clk,(MASTER)clk.clk,(SLAVE)led.clk,(SLAVE)accelerometer_spi.clk,(SLAVE)jtag_uart.clk,(SLAVE)onchip_memory.clk1,(SLAVE)timer.clk,(SLAVE)cpu.clk) 1 1 2 410 580 830
-preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)nios_accelerometer.led_external_connection,(SLAVE)led.external_connection) 1 0 3 NJ 560 NJ 560 NJ
-preplace netloc INTERCONNECT<net_container>nios_accelerometer</net_container>(MASTER)cpu.instruction_master,(SLAVE)onchip_memory.s1,(SLAVE)timer.s1,(SLAVE)sysid_qsys.control_slave,(SLAVE)accelerometer_spi.avalon_accelerometer_spi_mode_slave,(SLAVE)jtag_uart.avalon_jtag_slave,(SLAVE)cpu.debug_mem_slave,(MASTER)cpu.data_master,(SLAVE)led.s1) 1 1 2 450 410 810
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)hex1.external_connection,(SLAVE)nios_accelerometer.hex1_external_connection) 1 0 3 NJ 760 NJ 760 NJ
+preplace netloc FAN_OUT<net_container>nios_accelerometer</net_container>(SLAVE)accelerometer_spi.clk,(SLAVE)hex2.clk,(SLAVE)hex0.clk,(SLAVE)led.clk,(SLAVE)jtag_uart.clk,(SLAVE)sysid_qsys.clk,(SLAVE)hex3.clk,(MASTER)clk.clk,(SLAVE)timer.clk,(SLAVE)cpu.clk,(SLAVE)hex1.clk,(SLAVE)hex5.clk,(SLAVE)hex4.clk,(SLAVE)onchip_memory.clk1) 1 1 2 410 410 810
+preplace netloc FAN_OUT<net_container>nios_accelerometer</net_container>(SLAVE)jtag_uart.reset,(SLAVE)hex3.reset,(SLAVE)led.reset,(SLAVE)hex2.reset,(SLAVE)cpu.reset,(SLAVE)hex4.reset,(SLAVE)timer.reset,(SLAVE)accelerometer_spi.reset,(SLAVE)onchip_memory.reset1,(MASTER)clk.clk_reset,(SLAVE)hex1.reset,(SLAVE)hex5.reset,(SLAVE)hex0.reset,(SLAVE)sysid_qsys.reset) 1 1 2 430 450 870
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)nios_accelerometer.hex0_external_connection,(SLAVE)hex0.external_connection) 1 0 3 NJ 660 NJ 660 NJ
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)nios_accelerometer.hex3_external_connection,(SLAVE)hex3.external_connection) 1 0 3 NJ 1160 NJ 1160 NJ
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)nios_accelerometer.accelerometer_spi_external_interface,(SLAVE)accelerometer_spi.external_interface) 1 0 3 NJ 80 NJ 80 NJ
+preplace netloc FAN_OUT<net_container>nios_accelerometer</net_container>(SLAVE)accelerometer_spi.interrupt,(MASTER)cpu.irq,(SLAVE)timer.irq,(SLAVE)jtag_uart.irq) 1 2 1 850
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)hex4.external_connection,(SLAVE)nios_accelerometer.hex4_external_connection) 1 0 3 NJ 960 NJ 960 NJ
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)hex5.external_connection,(SLAVE)nios_accelerometer.hex5_external_connection) 1 0 3 NJ 1060 NJ 1060 NJ
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)nios_accelerometer.reset,(SLAVE)clk.clk_in_reset) 1 0 1 NJ
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)led.external_connection,(SLAVE)nios_accelerometer.led_external_connection) 1 0 3 NJ 560 NJ 560 NJ
 preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)nios_accelerometer.clk,(SLAVE)clk.clk_in) 1 0 1 NJ
-preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)clk.clk_in_reset,(SLAVE)nios_accelerometer.reset) 1 0 1 NJ
-levelinfo -pg 1 0 200 1390
+preplace netloc EXPORT<net_container>nios_accelerometer</net_container>(SLAVE)hex2.external_connection,(SLAVE)nios_accelerometer.hex2_external_connection) 1 0 3 NJ 860 NJ 860 NJ
+preplace netloc INTERCONNECT<net_container>nios_accelerometer</net_container>(SLAVE)hex2.s1,(SLAVE)led.s1,(MASTER)cpu.data_master,(SLAVE)hex3.s1,(SLAVE)jtag_uart.avalon_jtag_slave,(SLAVE)accelerometer_spi.avalon_accelerometer_spi_mode_slave,(SLAVE)sysid_qsys.control_slave,(SLAVE)onchip_memory.s1,(SLAVE)cpu.debug_mem_slave,(MASTER)cpu.instruction_master,(SLAVE)hex0.s1,(SLAVE)hex4.s1,(SLAVE)hex1.s1,(SLAVE)timer.s1,(SLAVE)hex5.s1) 1 1 2 450 430 830
+levelinfo -pg 1 0 200 1190
 levelinfo -hier nios_accelerometer 210 240 570 930 1180
