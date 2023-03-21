@@ -16,10 +16,10 @@ THRESHOLD = 100
 class NiosConnector():
         
     def __init__(self):
+        self._hasBomb = True
+        self._ledsLit = False
         try: 
             self._niosBridge = intel_jtag_uart.intel_jtag_uart()
-            self._hasBomb = True
-            self._ledsLit = False
             self.setLEDS(False)
             self.setBomb(False)
         except Exception as e:
@@ -128,8 +128,10 @@ if __name__ == "__main__":
     #     fig2.canvas.flush_events()
     #     plt.draw()
     #     plt.pause(0.0000001)
+    b = False
     while 1:
         dirMap = ["NONE","RIGHT","LEFT"]
         print(dirMap[controller.getDirection()])
-        b = False
-        self.setBomb(b)
+        controller.setBomb(b)
+        b = not b
+        
