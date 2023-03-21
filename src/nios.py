@@ -48,7 +48,7 @@ class NiosConnector():
         return 0
     
     def setLEDS(self,on:bool):
-        if on != self._ledsLit:
+        if self._ledsLit != on:
             self._ledsLit = on
             if(on):
                 self._niosBridge.write(b'L')
@@ -57,7 +57,7 @@ class NiosConnector():
             self._niosBridge.read()
     
     def setBomb(self, on:bool):
-        if on != self._hasBomb:
+        if self._hasBomb != on:
             self._hasBomb = on
             if(on):
                 self._niosBridge.write(b'B')
@@ -131,3 +131,5 @@ if __name__ == "__main__":
     while 1:
         dirMap = ["NONE","RIGHT","LEFT"]
         print(dirMap[controller.getDirection()])
+        b = False
+        self.setBomb(b)
