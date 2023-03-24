@@ -1,1 +1,4 @@
 # FoodGame
+
+“BOMBTATO is a multiplayer online game in which players must pass a virtual "bomb" before a set timer reaches zero. If a player has the bomb when the timer expires, they are eliminated from the game. The game utilizes an accelerometer sensor on an FPGA board to detect the degree of tilt, which allows players to manipulate the direction of passing of the bomb.
+Furthermore, the game is designed as a networked multiplayer game, where each player is required to create their own unique account with corresponding login credentials, including a password. The aim of the network implementation of the game is to allow players to compete against each other remotely from their individual computers. To ensure the security of each player's account and personal information, appropriate measures have been taken to protect against unauthorized access and data breaches.
